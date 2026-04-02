@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brasil Fut — Gerenciador de Futebol</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060A0F;
+      --s0: #0B1017;
+      --s1: #111820;
+      --s2: #182030;
+      --s3: #1F2A3C;
+      --bd: #263040;
+      --g:  #00D166;
+      --gd: #009A4C;
+      --gl: rgba(0,209,102,.12);
+      --t1: #EDF2F7;
+      --t2: #94A3B8;
+      --t3: #536070;
+      --fd: 'Syne', sans-serif;
+      --fb: 'Inter', sans-serif;
+      --fm: 'IBM Plex Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--t1);
+      font-family: var(--fb);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(6,10,15,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--bd);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--fd);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--g);
+      letter-spacing: -.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo span { color: var(--t1); }
+    .badge-beta {
+      font-family: var(--fm);
+      font-size: 10px;
+      font-weight: 600;
+      color: #000;
+      background: var(--g);
+      padding: 2px 7px;
+      border-radius: 99px;
+      letter-spacing: .05em;
+    }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a {
+      color: var(--t2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color .15s;
+    }
+    .nav-links a:hover { color: var(--t1); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 30%, rgba(0,209,102,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--fm);
+      font-size: 11px;
+      color: var(--g);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: .85;
+    }
+    .hero h1 {
+      font-family: var(--fd);
+      font-size: clamp(42px, 8vw, 80px);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--g); }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 18px);
+      color: var(--t2);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 48px;
+      font-weight: 400;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--g);
+      color: #000;
+      font-family: var(--fd);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background .15s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--gd); transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--t1);
+      font-family: var(--fd);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid var(--bd);
+      transition: border-color .15s, background .15s;
+    }
+    .btn-secondary:hover { border-color: var(--g); background: var(--gl); }
+
+    .hero-note {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--t3);
+      font-family: var(--fm);
+    }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 24px;
+      background: var(--s0);
+      border-top: 1px solid var(--bd);
+      border-bottom: 1px solid var(--bd);
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-val {
+      font-family: var(--fm);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--g);
+    }
+    .stat-lbl {
+      font-size: 12px;
+      color: var(--t3);
+      margin-top: 2px;
+    }
+
+    /* FEATURES */
+    .section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .section-title {
+      font-family: var(--fd);
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      margin-bottom: 8px;
+    }
+    .section-title span { color: var(--g); }
+    .section-sub {
+      color: var(--t2);
+      font-size: 15px;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color .15s, background .15s;
+    }
+    .feature-card:hover {
+      border-color: rgba(0,209,102,.4);
+      background: var(--s2);
+    }
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+    .feature-title {
+      font-family: var(--fd);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 13px;
+      color: var(--t2);
+      line-height: 1.6;
+    }
+
+    /* DOWNLOAD */
+    .download-section {
+      background: var(--s0);
+      border-top: 1px solid var(--bd);
+      border-bottom: 1px solid var(--bd);
+    }
+    .download-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .download-inner .section-title { margin-bottom: 12px; }
+
+    .instructions {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-radius: 12px;
+      padding: 32px;
+      margin-top: 40px;
+      text-align: left;
+    }
+    .instructions h3 {
+      font-family: var(--fd);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--t2);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 14px;
+      color: var(--t1);
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      background: var(--gl);
+      border: 1px solid rgba(0,209,102,.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--fm);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--g);
+    }
+    .step code {
+      font-family: var(--fm);
+      font-size: 13px;
+      background: var(--s3);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--g);
+    }
+    .step-note {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--t3);
+    }
+
+    /* REQUISITOS */
+    .req-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .req-chip {
+      background: var(--s2);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: var(--t2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .req-chip .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--g);
+      flex-shrink: 0;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--bd);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--t3);
+      font-size: 13px;
+    }
+    footer a { color: var(--t2); text-decoration: none; }
+    footer a:hover { color: var(--g); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-secondary { width: 100%; max-width: 300px; justify-content: center; }
+      .stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">
+      ⚽ Brasil<span>Fut</span>
+      <span class="badge-beta">BETA</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Funcionalidades</a>
+      <a href="#download">Download</a>
+      <a href="https://github.com/bloodyu2/brasil-fut-app" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Gerenciador de Futebol · Versão Beta</p>
+    <h1>O futebol<br>no seu <span>controle</span></h1>
+    <p class="hero-sub">
+      Monte seu clube, escale seu elenco, jogue campeonatos e gerencie
+      transferências — tudo em um jogo de gerência offline que roda direto
+      no navegador.
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/bloodyu2/brasil-fut-app/releases/latest" class="btn-primary" target="_blank">
+        ⬇ Baixar Brasil Fut
+      </a>
+      <a href="brasil-fut.html" class="btn-secondary" target="_blank">
+        ▶ Jogar Online
+      </a>
+    </div>
+    <p class="hero-note">Windows · Gratuito · Sem instalação obrigatória</p>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val">8.300+</div>
+      <div class="stat-lbl">Escudos de clubes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">86</div>
+      <div class="stat-lbl">Seleções nacionais</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">100%</div>
+      <div class="stat-lbl">Offline</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">0</div>
+      <div class="stat-lbl">Instalação necessária</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <h2 class="section-title">O que você pode <span>fazer</span></h2>
+    <p class="section-sub">Tudo que um gerenciador de futebol precisa, direto no seu PC.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏟</div>
+        <div class="feature-title">Gerencie seu Clube</div>
+        <div class="feature-desc">Escolha um clube de qualquer liga do mundo, desenvolva seu projeto de jogo e dispute campeonatos.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Monte seu Elenco</div>
+        <div class="feature-desc">Contrate e negocie jogadores, gerencie contratos e construa o time dos seus sonhos.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗂</div>
+        <div class="feature-title">Escalação Tática</div>
+        <div class="feature-desc">Posicione jogadores no campo com drag-and-drop, defina esquemas táticos e escolha titulares.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Simulação de Partidas</div>
+        <div class="feature-desc">Dispute partidas, acompanhe resultados e navegue pelos campeonatos temporada a temporada.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <div class="feature-title">Salvar e Carregar</div>
+        <div class="feature-desc">Progresso salvo automaticamente no navegador — volte de onde parou a qualquer momento.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Seleções e Clubes</div>
+        <div class="feature-desc">86+ seleções nacionais com camisas reais e mais de 8.300 escudos de clubes de todo o mundo.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <div class="download-section" id="download">
+    <div class="download-inner">
+      <h2 class="section-title">Baixar e <span>jogar</span></h2>
+      <p class="section-sub">Faça o download do pacote completo e comece a jogar em segundos.</p>
+
+      <div class="hero-actions" style="justify-content: center;">
+        <a href="https://github.com/bloodyu2/brasil-fut-app/releases/latest" class="btn-primary" target="_blank">
+          ⬇ Download (.zip) — Windows
+        </a>
+        <a href="brasil-fut.html" class="btn-secondary" target="_blank">
+          ▶ Jogar direto no navegador
+        </a>
+      </div>
+
+      <div class="instructions">
+        <h3>Como instalar</h3>
+        <ul class="steps">
+          <li class="step">
+            <span class="step-num">1</span>
+            <span>
+              Baixe o arquivo <code>BrasilFut.zip</code> e extraia em qualquer pasta do seu PC.
+              <span class="step-note">Não é necessário instalar nada.</span>
+            </span>
+          </li>
+          <li class="step">
+            <span class="step-num">2</span>
+            <span>
+              Abra a pasta extraída e execute <code>JOGAR.bat</code> para iniciar o jogo.
+              <span class="step-note">Se tiver Python instalado, o launcher abre automaticamente no melhor modo.</span>
+            </span>
+          </li>
+          <li class="step">
+            <span class="step-num">3</span>
+            <span>
+              Prefere sem janela de terminal? Use <code>BrasilFut.vbs</code> — inicia silenciosamente.
+              <span class="step-note">Mesmo resultado, só muda a forma de abrir.</span>
+            </span>
+          </li>
+          <li class="step">
+            <span class="step-num">4</span>
+            <span>
+              Crie um novo jogo, escolha seu clube e comece a gerenciar!
+              <span class="step-note">O progresso é salvo automaticamente no navegador.</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <h3 style="font-family: var(--fd); font-size: 14px; font-weight: 700; color: var(--t2); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px;">Requisitos</h3>
+        <div class="req-chips">
+          <div class="req-chip"><span class="dot"></span> Windows 10 ou superior</div>
+          <div class="req-chip"><span class="dot"></span> Navegador moderno (Edge, Chrome, Firefox)</div>
+          <div class="req-chip"><span class="dot"></span> Python 3.6+ (opcional, para melhor experiência)</div>
+          <div class="req-chip"><span class="dot"></span> ~45 MB de espaço em disco</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Brasil Fut · Versão Beta · Projeto pessoal</p>
+    <p style="margin-top: 8px;">
+      <a href="https://github.com/bloodyu2/brasil-fut-app" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="brasil-fut.html" target="_blank">Jogar Online</a>
+    </p>
+  </footer>
+
+</body>
+</html>
