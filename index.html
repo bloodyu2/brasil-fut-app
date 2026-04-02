@@ -140,6 +140,18 @@
     footer a { color: var(--t2); text-decoration: none; }
     footer a:hover { color: var(--g); }
 
+    /* COMPAT CHIPS */
+    .compat-note {
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+      margin-top: 14px;
+    }
+    .compat-chip {
+      font-family: var(--fm); font-size: 11px; font-weight: 500;
+      padding: 4px 10px; border-radius: 99px; border: 1px solid;
+    }
+    .compat-ok  { color: var(--g); border-color: rgba(0,209,102,.3); background: rgba(0,209,102,.07); }
+    .compat-no  { color: #FF4757; border-color: rgba(255,71,87,.3); background: rgba(255,71,87,.07); }
+
     /* SCROLL HINT */
     .scroll-hint {
       display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -333,8 +345,13 @@
     </button>
     <div class="btn-meta">
       <span>📦 BrasilFut.zip — ~24 MB</span>
-      <span>🪟 Windows 10+</span>
+      <span>🖥 Apenas desktop</span>
       <span>🔒 Gratuito</span>
+    </div>
+    <div class="compat-note">
+      <span class="compat-chip compat-ok">🪟 Windows</span>
+      <span class="compat-chip compat-ok">🍎 Mac (navegador)</span>
+      <span class="compat-chip compat-no">📵 Sem versão mobile</span>
     </div>
 
     <div class="scroll-hint">
@@ -397,7 +414,11 @@
               ⚠️ Se o <code>JOGAR.bat</code> abrir e fechar sem nada acontecer, pode ser que o Python não esteja instalado.
               Baixe em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> (versão 3.6+) e tente novamente.
               <br><br>
-              Alternativa: abra a pasta e dê duplo clique direto no arquivo <code>brasil-fut.html</code> — ele abre no seu navegador e funciona da mesma forma.
+              Alternativa (Windows e Mac): abra a pasta e dê duplo clique direto no arquivo <code>brasil-fut.html</code> — ele abre no seu navegador e funciona da mesma forma.
+              <br><br>
+              🍎 <strong>Mac:</strong> os arquivos <code>.bat</code> e <code>.vbs</code> são exclusivos para Windows. No Mac, abra sempre o <code>brasil-fut.html</code> direto no navegador (Chrome, Safari ou Firefox).
+              <br><br>
+              📵 <strong>Mobile não é suportado</strong> — o jogo foi desenvolvido para desktop e não funciona em celular ou tablet.
             </span>
           </span>
         </li>
@@ -410,10 +431,13 @@
         </li>
       </ul>
       <div class="req-chips">
-        <div class="req-chip"><span class="dot"></span>Windows 10 ou superior</div>
-        <div class="req-chip"><span class="dot"></span>Edge, Chrome ou Firefox</div>
+        <div class="req-chip"><span class="dot"></span>Windows 10+ ou Mac</div>
+        <div class="req-chip"><span class="dot"></span>Edge, Chrome, Firefox ou Safari</div>
         <div class="req-chip"><span class="dot"></span>Python 3.6+ (opcional — python.org)</div>
         <div class="req-chip"><span class="dot"></span>~45 MB de espaço livre</div>
+        <div class="req-chip" style="border-color:rgba(255,71,87,.3);color:#FF4757;background:rgba(255,71,87,.05)">
+          <span class="dot" style="background:#FF4757"></span>Sem suporte mobile
+        </div>
       </div>
     </div>
   </section>
