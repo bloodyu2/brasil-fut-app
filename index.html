@@ -140,6 +140,28 @@
     footer a { color: var(--t2); text-decoration: none; }
     footer a:hover { color: var(--g); }
 
+    /* SCROLL HINT */
+    .scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      margin-top: 40px; color: var(--t3); font-size: 12px;
+      font-family: var(--fm); letter-spacing: .08em;
+      animation: fadeInHint 1.2s ease .8s both;
+    }
+    .scroll-hint span { text-transform: uppercase; font-size: 10px; letter-spacing: .15em; }
+    .scroll-arrow {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      animation: bounce 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); opacity: .5; }
+      50%       { transform: translateY(7px); opacity: 1; }
+    }
+    @keyframes fadeInHint {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     /* ── MODAL BASE ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 500;
@@ -313,6 +335,15 @@
       <span>📦 BrasilFut.zip — ~24 MB</span>
       <span>🪟 Windows 10+</span>
       <span>🔒 Gratuito</span>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Veja as instruções enquanto baixa</span>
+      <div class="scroll-arrow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
     </div>
   </section>
 
