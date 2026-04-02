@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Background -->
+  <rect width="100" height="100" rx="20" fill="#060A0F"/>
+  <!-- Ball outline -->
+  <circle cx="50" cy="50" r="38" stroke="#00D166" stroke-width="2.5"/>
+  <!-- Glow effect -->
+  <circle cx="50" cy="50" r="38" stroke="#00D166" stroke-width="6" opacity="0.08"/>
+  <!-- Center pentagon -->
+  <polygon points="50,31 65.9,42.8 59.9,61.3 40.1,61.3 34.1,42.8"
+    fill="#00D166" fill-opacity="0.18" stroke="#00D166" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Seam lines from pentagon vertices to ball edge -->
+  <line x1="50"   y1="31"   x2="50"   y2="12"   stroke="#00D166" stroke-width="1.5" opacity="0.5"/>
+  <line x1="65.9" y1="42.8" x2="86.1" y2="36.4" stroke="#00D166" stroke-width="1.5" opacity="0.5"/>
+  <line x1="59.9" y1="61.3" x2="73.5" y2="79.3" stroke="#00D166" stroke-width="1.5" opacity="0.5"/>
+  <line x1="40.1" y1="61.3" x2="26.5" y2="79.3" stroke="#00D166" stroke-width="1.5" opacity="0.5"/>
+  <line x1="34.1" y1="42.8" x2="13.9" y2="36.4" stroke="#00D166" stroke-width="1.5" opacity="0.5"/>
+</svg>

@@ -6,3 +6,4 @@ npm-debug.log*
 Thumbs.db
 *.zip
 make_zip.ps1
+generate_icons.py
