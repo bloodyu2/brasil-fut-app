@@ -319,12 +319,19 @@
       </svg>
       Brasil<span>Fut</span> <span class="badge-beta">BETA</span>
     </div>
-    <button class="btn-feedback" onclick="openFeedback()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-      Feedback
-    </button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <a href="#updates" style="font-size:13px;color:var(--t3);text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid transparent;transition:all .15s;font-weight:500" id="nav-updates-link"
+        onmouseover="this.style.color='var(--t1)';this.style.borderColor='var(--bd)'"
+        onmouseout="this.style.color='var(--t3)';this.style.borderColor='transparent'">
+        Novidades
+      </a>
+      <button class="btn-feedback" onclick="openFeedback()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Feedback
+      </button>
+    </div>
   </nav>
 
   <!-- ── HERO ── -->
@@ -439,6 +446,85 @@
           <span class="dot" style="background:#FF4757"></span>Sem suporte mobile
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- UPDATES / NOVIDADES -->
+  <section class="section" id="updates">
+    <h2 class="section-title">Novidades &amp; <span>Atualizações</span></h2>
+    <p class="section-sub">O jogo é atualizado com frequência. Veja o que mudou em cada versão.</p>
+
+    <div style="display:flex;flex-direction:column;gap:16px;max-width:680px;margin:0 auto">
+
+      <!-- v1.2 -->
+      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.2</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">02/04/2025</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix + UX</span>
+        </div>
+        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">⬆</span>
+            <span><strong style="color:var(--t1)">Promoção e rebaixamento reais</strong> — ao final de cada temporada o jogo agora reconstrói a liga na divisão correta. Subiu? Enfrenta times mais fortes. Caiu? Disputa a divisão inferior.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🪟</span>
+            <span><strong style="color:var(--t1)">Modal pós-partida</strong> — resultado, gols e eventos agora aparecem em janela centralizada em vez de faixa no canto. Feche quando quiser.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💸</span>
+            <span><strong style="color:var(--t1)">Valor de mercado recalibrado</strong> — fórmula quadrática do Brasfoot original. Valores mais realistas para o futebol brasileiro (OVR 70 ≈ R$14M).</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📭</span>
+            <span><strong style="color:var(--t1)">Aba de Ofertas Recebidas corrigida</strong> — exibe corretamente as propostas de outros clubes pelos seus jogadores.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🛡</span>
+            <span><strong style="color:var(--t1)">Logos das equipes</strong> — fallback via data URI SVG, mais robusto e sem flickering em listas longas.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- v1.1 -->
+      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.1</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">30/03/2025</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Site · UX</span>
+        </div>
+        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">🔒</span>
+            <span><strong style="color:var(--t1)">Modal de download com checklist</strong> — leia as instruções antes de baixar. Rastreio de indicação para entender quem está convidando quem.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">💬</span>
+            <span><strong style="color:var(--t1)">Botão de Feedback</strong> — envie sugestões e bugs diretamente pelo site.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">🍎</span>
+            <span><strong style="color:var(--t1)">Info de compatibilidade</strong> — Windows, Mac (navegador) e aviso de sem suporte mobile.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- v1.0 -->
+      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden;opacity:.7">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(83,96,112,.2);color:var(--t3);padding:3px 9px;border-radius:99px">v1.0</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">28/03/2025</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--t3);font-weight:600">Lançamento Beta</span>
+        </div>
+        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t3)">
+            <span style="margin-top:1px;flex-shrink:0">🚀</span>
+            <span>Lançamento inicial para beta testers. Jogo completo offline, 8.300+ escudos, 86 seleções, sistema de campeonatos e temporadas.</span>
+          </li>
+        </ul>
+      </div>
+
     </div>
   </section>
 

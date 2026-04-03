@@ -10799,6 +10799,327 @@ SCREENS['transferencias_ofertas'] = function(){ window._transferTab='mercado'; r
 // ══  END TRANSFER ENGINE v3  ═════════════════════════════════════════════════
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ══  PATCH v5 — Engine Brasfoot original + fixes de campeonato, modal,      ══
+// ══            ofertas, logos e valuation de jogadores                       ══
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── 1. VALUATION — fórmula quadrática original do Brasfoot ──────────────────
+// OVR 50 ≈ R$1.3M · OVR 60 ≈ R$5.5M · OVR 70 ≈ R$14M · OVR 80 ≈ R$31M · OVR 90 ≈ R$60M
+calcMarketValue = function(p){
+  if(!p) return 50000;
+  const ovr = Math.max(40, Math.min(99, p.ovr || (typeof calcOvr==='function'?calcOvr(p.stats||{}):50) || 50));
+  const age = p.age || 25;
+  const moral = p.moral || 75;
+  const contractEnd = p.contractEnd || 12;
+
+  // Fórmula quadrática: base cresce de forma exponencial com o OVR
+  const base = Math.pow(Math.max(0, ovr - 40), 2.2) * 8000;
+
+  // Multiplicador etário — pico 22–27, queda progressiva
+  const ageMult = age<=18?1.35 : age<=21?1.55 : age<=24?1.30 :
+                  age<=27?1.10 : age<=30?0.85 : age<=33?0.55 : 0.30;
+
+  // Bônus de potencial para jovens
+  const pot = p.potential || ovr;
+  const potBonus = (age<=24 && pot>ovr) ? 1 + Math.min(0.4,(pot-ovr)*0.015) : 1.0;
+
+  // Fator de moral (0.6x a 1.4x)
+  const moralMult = Math.max(0.6, Math.min(1.4, moral / 75));
+
+  // Penalidade de contrato curto
+  const contractMult = contractEnd<=3?0.60 : contractEnd<=6?0.75 : 1.0;
+
+  const raw = base * ageMult * potBonus * moralMult * contractMult;
+
+  // Arredondamento escalonado
+  if(raw>=20000000) return Math.round(raw/1000000)*1000000;
+  if(raw>=5000000)  return Math.round(raw/500000)*500000;
+  if(raw>=1000000)  return Math.round(raw/100000)*100000;
+  if(raw>=100000)   return Math.round(raw/10000)*10000;
+  return Math.max(20000, Math.round(raw/5000)*5000);
+};
+
+// ─── 2. CSS — Modal de Resumo Pós-Partida ────────────────────────────────────
+(function(){
+  const st = document.createElement('style');
+  st.textContent = `
+    #msm-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(6,10,15,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;}
+    #msm-overlay.show{display:flex;}
+    .msm-box{background:var(--s1);border:1px solid var(--bd);border-radius:16px;max-width:500px;width:92%;max-height:82vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.65);animation:msmIn .25s ease;}
+    @keyframes msmIn{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .msm-head{background:var(--s2);border-bottom:1px solid var(--bd);padding:10px 20px;border-radius:16px 16px 0 0;font-size:10px;font-family:var(--fm);color:var(--t3);text-transform:uppercase;letter-spacing:.1em;}
+    .msm-body{padding:20px;}
+    .msm-teams{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+    .msm-team-side{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:160px;}
+    .msm-team-name{font-family:var(--fd);font-weight:700;font-size:13px;text-align:center;line-height:1.2;}
+    .msm-scoreline{font-family:var(--fd);font-size:44px;font-weight:800;letter-spacing:-.03em;text-align:center;flex-shrink:0;}
+    .msm-result-pill{display:inline-flex;align-items:center;padding:4px 14px;border-radius:99px;font-family:var(--fm);font-size:11px;font-weight:700;margin-bottom:12px;}
+    .msm-win{background:var(--gl);color:var(--g);}
+    .msm-loss{background:var(--rdd);color:var(--rd);}
+    .msm-draw{background:var(--aud);color:var(--au);}
+    .msm-events{border-top:1px solid var(--bd);padding:12px 0 0;}
+    .msm-ev{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(38,48,64,.4);font-size:13px;}
+    .msm-ev:last-child{border:none;}
+    .msm-ev-min{font-family:var(--fm);font-size:11px;color:var(--t3);width:30px;flex-shrink:0;text-align:right;}
+    .msm-news{background:var(--s0);border-top:1px solid var(--bd);padding:12px 20px;}
+    .msm-news-hdr{font-size:10px;font-family:var(--fm);color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+    .msm-news-item{font-size:12px;color:var(--t2);padding:3px 0;line-height:1.4;}
+    .msm-foot{padding:12px 20px;display:flex;justify-content:flex-end;border-top:1px solid var(--bd);}
+  `;
+  document.head.appendChild(st);
+  const el = document.createElement('div');
+  el.id = 'msm-overlay';
+  el.innerHTML = '<div class="msm-box" id="msm-box"></div>';
+  document.body.appendChild(el);
+})();
+
+// ─── 3. Função showMatchSummaryModal ─────────────────────────────────────────
+function showMatchSummaryModal(match, comp, onContinue){
+  if(!match){ if(onContinue) onContinue(); return; }
+  const allT = comp==='copa'?[...(G.teams||[]),...(G.copaTeams||[])]:
+               comp==='estadual'?(G.estadual?.teams||G.teams):G.teams;
+  const home = allT.find(t=>t.id===match.home)||{name:match.home||'Casa',id:match.home||'',color:'#1a3a6b'};
+  const away = allT.find(t=>t.id===match.away)||{name:match.away||'Fora',id:match.away||'',color:'#6b1a1a'};
+  const isHome = match.home===G.myTeamId;
+  const myG = isHome?match.hGoals:match.aGoals;
+  const opG = isHome?match.aGoals:match.hGoals;
+  const isWin=myG>opG, isDraw=myG===opG;
+  const pillCls = isWin?'msm-win':isDraw?'msm-draw':'msm-loss';
+  const pillTxt = isWin?'⚽ Vitória!':isDraw?'🤝 Empate':'😔 Derrota';
+  const compMap={copa:'Copa do Brasil',estadual:'Campeonato Estadual',libertadores:'Libertadores',sulamericana:'Sul-Americana'};
+  const compLbl = compMap[comp]||G.leagueName||'Liga';
+
+  const goals = (match.events||[]).filter(e=>e.text&&e.text.includes('⚽'));
+  const cards = (match.events||[]).filter(e=>e.text&&(e.text.includes('🟨')||e.text.includes('🟥')));
+  const evts = [...goals,...cards].sort((a,b)=>(a.min||0)-(b.min||0)).slice(0,8);
+  const recentNews = (G.news||[]).slice(-4);
+
+  document.getElementById('msm-box').innerHTML = `
+    <div class="msm-head">${compLbl} · Rodada ${match.round||G.currentRound}</div>
+    <div class="msm-body">
+      <div class="msm-teams">
+        <div class="msm-team-side">${typeof badgeHTML==='function'?badgeHTML(home,40):''}<div class="msm-team-name">${home.name}</div></div>
+        <div style="text-align:center;flex-shrink:0">
+          <div class="msm-scoreline">${match.hGoals} <span style="color:var(--t3)">—</span> ${match.aGoals}</div>
+          <div class="msm-result-pill ${pillCls}">${pillTxt}</div>
+        </div>
+        <div class="msm-team-side">${typeof badgeHTML==='function'?badgeHTML(away,40):''}<div class="msm-team-name">${away.name}</div></div>
+      </div>
+      ${evts.length?`<div class="msm-events">${evts.map(e=>`<div class="msm-ev"><span class="msm-ev-min">${e.min||'?'}'</span><span>${e.text||''}</span></div>`).join('')}</div>`:''}
+    </div>
+    ${recentNews.length?`<div class="msm-news"><div class="msm-news-hdr">📰 Notícias</div>${recentNews.map(n=>`<div class="msm-news-item">${n}</div>`).join('')}</div>`:''}
+    <div class="msm-foot"><button class="btn btn-primary" onclick="closeMatchSummaryModal()">Continuar →</button></div>
+  `;
+  document.getElementById('msm-overlay').classList.add('show');
+  window._msmCb = onContinue||null;
+}
+
+function closeMatchSummaryModal(){
+  document.getElementById('msm-overlay').classList.remove('show');
+  if(window._msmCb){ const cb=window._msmCb; window._msmCb=null; cb(); }
+}
+
+// ─── 4. Hook modal nas partidas jogadas ──────────────────────────────────────
+(function hookMatchModal(){
+  showMatchView = function(match){
+    const mv=document.getElementById('match-view');
+    const h=G.teams.find(t=>t.id===match.home), a=G.teams.find(t=>t.id===match.away);
+    if(!h||!a){finishRound(G.leagueFixtures[G.currentRound-1]);return;}
+    mvCurrentMatch=match; mvCurrentComp=null;
+    document.getElementById('mv-comp').textContent=G.leagueName;
+    document.getElementById('mv-teams-label').textContent=`${h.name} × ${a.name}`;
+    document.getElementById('mv-score').textContent='0 — 0';
+    document.getElementById('mv-minute').textContent='Apito inicial!';
+    document.getElementById('mv-log').innerHTML='';
+    mv.classList.add('show');
+    runMatchAnimation(match,h,a,()=>{
+      mv.classList.remove('show');
+      G.lastMatchReport=match; mvCurrentMatch=null; mvCurrentComp=null;
+      showMatchSummaryModal(match,null,()=>finishRound(G.leagueFixtures[G.currentRound-1]));
+    });
+  };
+
+  showMatchViewComp = function(match,comp){
+    const mv=document.getElementById('match-view');
+    const compLabels={copa:'Copa do Brasil',estadual:'Campeonato Estadual',libertadores:'Libertadores'};
+    const allT=comp==='copa'?[...G.teams,...(G.copaTeams||[])]:comp==='estadual'?(G.estadual?.teams||G.teams):G.teams;
+    const h=allT.find(t=>t.id===match.home)||G.teams.find(t=>t.id===match.home);
+    const a=allT.find(t=>t.id===match.away)||G.teams.find(t=>t.id===match.away);
+    if(!h||!a){finishCompMatch(match,comp);return;}
+    mvCurrentMatch=match; mvCurrentComp=comp;
+    document.getElementById('mv-comp').textContent=compLabels[comp]||comp;
+    document.getElementById('mv-teams-label').textContent=`${h.name} × ${a.name}`;
+    document.getElementById('mv-score').textContent='0 — 0';
+    document.getElementById('mv-minute').textContent='Apito inicial!';
+    document.getElementById('mv-log').innerHTML='';
+    mv.classList.add('show');
+    runMatchAnimation(match,h,a,()=>{
+      mv.classList.remove('show');
+      G.lastMatchReport=match; const c=mvCurrentComp; mvCurrentMatch=null; mvCurrentComp=null;
+      showMatchSummaryModal(match,c,()=>finishCompMatch(match,c));
+    });
+  };
+
+  // Skip match também usa modal
+  const _origSkip = skipMatch;
+  skipMatch = function(){
+    if(simInterval) clearInterval(simInterval);
+    const mv=document.getElementById('match-view');
+    mv.classList.remove('show');
+    if(mvCurrentComp&&mvCurrentMatch){
+      const match=mvCurrentMatch, comp=mvCurrentComp;
+      mvCurrentMatch=null; mvCurrentComp=null;
+      if(!match.played) simulateMatchQuick(match);
+      G.lastMatchReport=match;
+      showMatchSummaryModal(match,comp,()=>finishCompMatch(match,comp));
+    } else if(mvCurrentMatch){
+      const match=mvCurrentMatch;
+      mvCurrentMatch=null; mvCurrentComp=null;
+      if(!match.played) simulateMatchQuick(match);
+      G.lastMatchReport=match;
+      showMatchSummaryModal(match,null,()=>finishRound(G.leagueFixtures[G.currentRound-1]));
+    }
+  };
+})();
+
+// ─── 5. Aba Ofertas Recebidas — tela correta ─────────────────────────────────
+SCREENS['transferencias_ofertas'] = function(){
+  const offers = G.pendingOffers||[];
+  const myT = getMyTeam();
+  if(!offers.length) return `
+    <div class="page-hdr"><div class="page-title">Ofertas Recebidas</div></div>
+    <div class="card" style="text-align:center;padding:36px 20px">
+      <div style="font-size:36px;margin-bottom:10px">📭</div>
+      <div style="color:var(--t2);font-size:14px">Nenhuma oferta no momento.</div>
+      <div style="color:var(--t3);font-size:12px;margin-top:6px">Continue gerenciando bem o time para atrair interesse de outros clubes!</div>
+    </div>`;
+  return `<div class="page-hdr">
+    <div class="page-title">Ofertas Recebidas</div>
+    <span style="background:var(--aud);color:var(--au);padding:3px 10px;border-radius:99px;font-size:12px;font-family:var(--fm);font-weight:700">${offers.length}</span>
+  </div>
+  ${offers.map(o=>{
+    const fromTeam=G.teams.find(t=>t.id===o.fromTeam)||{name:o.fromTeam||'Clube',id:o.fromTeam||''};
+    const player=myT.players.find(p=>p.id===o.playerId);
+    if(!player) return '';
+    const ovr=player.ovr||(typeof calcOvr==='function'?calcOvr(player.stats||{}):60);
+    const mv=typeof calcMarketValue==='function'?calcMarketValue({...player,ovr}):o.price;
+    const ratio=o.price/(mv||o.price);
+    const dealColor=ratio>=1.1?'var(--g)':ratio>=0.85?'var(--au)':'var(--rd)';
+    const dealLabel=ratio>=1.1?'✅ Acima do mercado':ratio>=0.85?'⚖️ Preço justo':'⚠️ Abaixo do mercado';
+    const posClass=(typeof POS_CLASS!=='undefined'?POS_CLASS[player.pos]:null)||'b-mid';
+    const fv=typeof fmtVal!=='undefined'?fmtVal:fmtK;
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:14px">
+        ${typeof badgeHTML==='function'?badgeHTML(fromTeam,38):''}
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:15px">${player.name}</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">
+            <span class="badge ${posClass}">${player.pos}</span>&nbsp;${player.age}a · OVR <strong style="color:${ovr>=80?'var(--g)':ovr>=65?'var(--au)':'var(--t1)'}">${ovr}</strong>
+          </div>
+        </div>
+        <div style="text-align:right;min-width:130px">
+          <div style="font-size:12px;color:var(--t3)">Proposta de</div>
+          <div style="font-size:13px;color:var(--t2);font-weight:600">${fromTeam.name}</div>
+          <div style="font-size:20px;font-family:var(--fm);font-weight:800;color:${dealColor}">${fv(o.price)}</div>
+          <div style="font-size:11px;color:${dealColor}">${dealLabel}</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--bd);margin-top:12px;padding-top:10px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" onclick="rejectOffer('${o.id}')">❌ Recusar</button>
+        <button class="btn btn-primary btn-sm" onclick="acceptOffer('${o.id}')">✅ Aceitar ${fv(o.price)}</button>
+      </div>
+    </div>`;
+  }).join('')}`;
+};
+
+// ─── 6. Promoção / Rebaixamento real — reconstrói G.teams na divisão correta ─
+(function fixPromoRelegation(){
+  const __prev = endSeason;
+  endSeason = function(){
+    if(!G){ __prev(); return; }
+    const cc = G.countryCode||'BRA';
+    const cfg = WORLD_DB[cc];
+    const numDiv = cfg?cfg.d.length:1;
+    const curDiv = G.divIdx||0;
+    const cn = typeof getCompNames==='function'?getCompNames(cc):{};
+    const sorted = [...G.teams].sort((a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga));
+    const n = sorted.length;
+    const pos = sorted.findIndex(t=>t.id===G.myTeamId)+1;
+    const rz = cn.relegZone||Math.max(1,Math.round(n*0.15));
+    const myT = getMyTeam();
+
+    let newDiv = curDiv, divMsg = null;
+    if(pos>n-rz && curDiv<numDiv-1){
+      newDiv = curDiv+1;
+      divMsg = `⬇️ REBAIXADO! ${myT.name} vai para ${cfg.d[newDiv]||'Segunda Divisão'} na próxima temporada!`;
+    } else if(pos<=2 && curDiv>0){
+      newDiv = curDiv-1;
+      divMsg = `🏆 PROMOVIDO! ${myT.name} sobe para ${cfg.d[newDiv]||'Primeira Divisão'}!`;
+    }
+    if(divMsg) G._pendingDivChange={newDiv,msg:divMsg};
+    else G._pendingDivChange=null;
+
+    __prev();
+
+    if(divMsg){
+      setTimeout(()=>{
+        if(!G||!G._pendingDivChange) return;
+        const {newDiv:nd,msg:dm}=G._pendingDivChange;
+        G._pendingDivChange=null;
+        const cfg2=WORLD_DB[G.countryCode||'BRA'];
+        if(!cfg2) return;
+        const divEntries=cfg2.t.filter(t=>t[2]===nd);
+        if(!divEntries.length){ notify(dm); return; }
+
+        // Salvar estado do time do jogador
+        const saved=getMyTeam();
+        const keepState={
+          id:saved.id,name:saved.name,players:saved.players,balance:saved.balance,
+          juniors:saved.juniors,stadium:saved.stadium,fans:saved.fans,wage:saved.wage,
+          training:saved.training,rating:saved.rating,color:saved.color,color2:saved.color2,
+          badge:saved.badge,state:saved.state,city:saved.city,country:saved.country,
+        };
+
+        // Montar times da nova divisão
+        const newTeams=divEntries.map(e=>{
+          const t=typeof buildTeamFromDB==='function'?buildTeamFromDB(e,G.countryCode,1.0):e;
+          return{...t,points:0,wins:0,draws:0,losses:0,gf:0,ga:0,played:0,libPoints:0,eliminated:false};
+        });
+
+        // Mesclar time do jogador (substituir o time com mesmo id ou o 1º slot)
+        const idx=newTeams.findIndex(t=>t.id===G.myTeamId);
+        const merged={...newTeams[Math.max(0,idx)],...keepState,points:0,wins:0,draws:0,losses:0,gf:0,ga:0,played:0};
+        if(idx>=0) newTeams[idx]=merged; else newTeams[0]=merged;
+
+        G.divIdx=nd;
+        G.teams=newTeams;
+        G.leagueName=cfg2.d[nd]||'Liga';
+        G.mySerie=(G.countryCode||'BRA')+'_'+nd;
+        G.leagueFixtures=generateLeagueFixtures(newTeams);
+        G.currentRound=1;
+        notify(dm);
+        G.news.push(dm);
+        updateTopbar(); renderContent(); saveAutoSave();
+      },2800);
+    }
+  };
+})();
+
+// ─── 7. Logo rendering — fallback robusto via data URI ───────────────────────
+badgeHTML = function(team, size=28){
+  if(!team) return '';
+  const tid=team.id||'';
+  const svg=badgeSVG(team,size);
+  const svgUri='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  return `<span class="team-badge" style="width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;vertical-align:middle">
+    <img src="escudos/${tid}.png" width="${size}" height="${size}"
+      style="object-fit:contain;display:block;image-rendering:-webkit-optimize-contrast"
+      alt="" loading="eager"
+      onerror="this.onerror=null;this.src='${svgUri.replace(/'/g,'%27')}'">
+  </span>`;
+};
+
 // ── START ──
 initSplash();
 </script>
