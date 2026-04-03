@@ -17,7 +17,9 @@
       --fd: 'Syne', sans-serif; --fb: 'Inter', sans-serif; --fm: 'IBM Plex Mono', monospace;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--t1); font-family: var(--fb); min-height: 100vh; overflow-x: hidden; }
+    section[id], div[id] { scroll-margin-top: 72px; }
 
     /* NAV */
     nav {
