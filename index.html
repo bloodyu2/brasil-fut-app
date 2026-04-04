@@ -458,11 +458,38 @@
 
     <div style="display:flex;flex-direction:column;gap:16px;max-width:680px;margin:0 auto">
 
+      <!-- v1.3 -->
+      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.3</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">03/04/2026</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix · Save Fix</span>
+        </div>
+        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💾</span>
+            <span><strong style="color:var(--t1)">Botão Continuar corrigido</strong> — o auto-save agora é gravado de forma compatível com o botão Continuar da tela inicial. Saves não são mais perdidos.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🌱</span>
+            <span><strong style="color:var(--t1)">Peneira corrigida</strong> — jovens eram gerados 3-4× por temporada. Agora acontece exatamente 1× na virada de temporada.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📭</span>
+            <span><strong style="color:var(--t1)">Ofertas fantasma eliminadas</strong> — propostas de jogadores já vendidos ou liberados não acumulam mais na aba de ofertas entre temporadas.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔄</span>
+            <span><strong style="color:var(--t1)">Modal de download/feedback</strong> — estado é resetado corretamente ao reabrir. Erro de envio de feedback agora é exibido ao usuário.</span>
+          </li>
+        </ul>
+      </div>
+
       <!-- v1.2 -->
       <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
           <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.2</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">02/04/2025</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">02/04/2026</span>
           <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix + UX</span>
         </div>
         <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
@@ -493,7 +520,7 @@
       <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
           <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.1</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">30/03/2025</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">30/03/2026</span>
           <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Site · UX</span>
         </div>
         <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
@@ -516,7 +543,7 @@
       <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden;opacity:.7">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
           <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(83,96,112,.2);color:var(--t3);padding:3px 9px;border-radius:99px">v1.0</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">28/03/2025</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">28/03/2026</span>
           <span style="margin-left:auto;font-size:11px;color:var(--t3);font-weight:600">Lançamento Beta</span>
         </div>
         <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
@@ -659,16 +686,39 @@
   <script>
     const SUPABASE_URL = 'https://eeklaiqrbtfhnnalzgjn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVla2xhaXFyYnRmaG5uYWx6Z2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MTIyNjksImV4cCI6MjA4OTI4ODI2OX0.1EtiZwjI14zRUr9Itn9MiO7GRqqaCMEGFxIfmj8Qq5g';
-    const DOWNLOAD_URL = 'https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.0-beta/BrasilFut.zip';
+    const DOWNLOAD_URL = 'https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.3/BrasilFut.zip';
 
     let wasReferred = null;
 
     /* ── Modals ── */
     function openDownload() {
+      // Reset checklist state on every open
+      document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
+      document.getElementById('referralSection').classList.remove('visible');
+      document.getElementById('referralInputWrap').classList.remove('visible');
+      document.getElementById('radioSim').classList.remove('active');
+      document.getElementById('radioNao').classList.remove('active');
+      document.getElementById('referralName').value = '';
+      document.getElementById('btnDoDownload').disabled = true;
+      document.getElementById('dlHint').textContent = 'Marque todos os itens acima para liberar o download.';
+      wasReferred = null;
       document.getElementById('modalDownload').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
     function openFeedback() {
+      // Reset feedback state on every open
+      document.getElementById('feedbackMsg').value = '';
+      document.getElementById('feedbackName').value = '';
+      document.getElementById('btnSendFeedback').disabled = true;
+      document.getElementById('btnSendFeedback').style.display = '';
+      document.getElementById('feedbackSuccess').style.display = 'none';
+      const body = document.getElementById('feedbackBody');
+      if (body) {
+        const ta = body.querySelector('textarea');
+        const nm = body.querySelector('.feedback-name');
+        if (ta) ta.style.display = '';
+        if (nm) nm.style.display = '';
+      }
       document.getElementById('modalFeedback').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -744,13 +794,20 @@
       const msg = document.getElementById('feedbackMsg').value.trim();
       const name = document.getElementById('feedbackName').value.trim() || null;
       document.getElementById('btnSendFeedback').disabled = true;
+      let ok = false;
       try {
-        await fetch(`${SUPABASE_URL}/rest/v1/brasilfut_feedback`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/brasilfut_feedback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
           body: JSON.stringify({ message: msg, name })
         });
+        ok = res.ok;
       } catch(_) {}
+      if (!ok) {
+        document.getElementById('btnSendFeedback').disabled = false;
+        alert('Erro ao enviar feedback. Verifique sua conexão e tente novamente.');
+        return;
+      }
       document.getElementById('feedbackBody').querySelector('textarea').style.display = 'none';
       document.getElementById('feedbackBody').querySelector('.feedback-name').style.display = 'none';
       document.getElementById('btnSendFeedback').style.display = 'none';

@@ -11120,6 +11120,56 @@ badgeHTML = function(team, size=28){
   </span>`;
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ══  PATCH v6 — BUG-15 · BUG-18 · BUG-10                                   ══
+// ══  saveAutoSave dual-write · conductPeneira dedup · ghost offer cleanup    ══
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── v6.1: saveAutoSave — grava em localStorage E IDB (fix BUG-15) ───────────
+// O IDB-only da v7255 quebrava o botão Continuar da splash (que lê localStorage)
+saveAutoSave = async function(){
+  try {
+    const myT = G && typeof getMyTeam === 'function' ? getMyTeam() : null;
+    const label = myT ? `${myT.name} — T${G.season} Rd${G.currentRound}` : 'Auto';
+    const slim = typeof _slimG === 'function' ? _slimG(G) : G;
+    const payload = {
+      G: slim, ts: Date.now(), label,
+      team: myT?.name, season: G?.season, serie: G?.leagueName, country: G?.countryCode
+    };
+    // localStorage → splash/loadAutoSave continuam funcionando
+    try { localStorage.setItem('bf_autosave', JSON.stringify(payload)); } catch(e) {}
+    // IDB → backup para saves grandes
+    if (typeof _idbPut === 'function') try { _idbPut('saves', '__autosave__', payload); } catch(e) {}
+  } catch(e) { console.warn('AutoSave v6:', e); }
+};
+
+// ─── v6.2: conductPeneira — cooldown 5 s evita dupla-chamada (fix BUG-18) ────
+// Múltiplos wrappers de endSeason (linhas 3044/4955/5979/7725) chamavam
+// conductPeneira 3-4x por virada de temporada, gerando jovens em excesso.
+(function deduplicatePeneira(){
+  const _orig = conductPeneira;
+  conductPeneira = function(team){
+    const now = Date.now();
+    if (window._lastPeneiraTs && now - window._lastPeneiraTs < 5000) return;
+    window._lastPeneiraTs = now;
+    return _orig(team);
+  };
+})();
+
+// ─── v6.3: endSeason wrapper — limpa ghost offers antes de rodar (fix BUG-10) ─
+// G.pendingOffers acumulava propostas de jogadores já vendidos/liberados.
+(function patchSeasonEndCleanup(){
+  const _prev = endSeason;
+  endSeason = function(){
+    if (G && G.pendingOffers && typeof getMyTeam === 'function') {
+      const myT = getMyTeam();
+      const myIds = new Set((myT && myT.players ? myT.players : []).map(p => p.id));
+      G.pendingOffers = G.pendingOffers.filter(o => myIds.has(o.playerId));
+    }
+    return _prev();
+  };
+})();
+
 // ── START ──
 initSplash();
 </script>
