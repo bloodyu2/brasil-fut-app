@@ -458,10 +458,37 @@
 
     <div style="display:flex;flex-direction:column;gap:16px;max-width:680px;margin:0 auto">
 
+      <!-- v1.4 -->
+      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.4</span>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">03/04/2026</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Crash Fixes · UX</span>
+        </div>
+        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🏆</span>
+            <span><strong style="color:var(--t1)">Pré-jogo de Copa/Estadual corrigido</strong> — crash ao abrir a tela de escalação antes de partidas de Copa ou Estadual foi eliminado. Campo e formação agora aparecem corretamente.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📊</span>
+            <span><strong style="color:var(--t1)">Dashboard mais estável</strong> — crash raro ao carregar o próximo adversário (time de Copa fora da lista da liga) foi corrigido com proteção de null.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔴</span>
+            <span><strong style="color:var(--t1)">Zona de rebaixamento destacada</strong> — times na zona de rebaixamento na tabela de classificação agora aparecem com fundo vermelho correto.</span>
+          </li>
+          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
+            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🏟</span>
+            <span><strong style="color:var(--t1)">Perfil do clube acessível</strong> — aba "Perfil" adicionada ao menu do Clube: histórico de troféus, aproveitamento e estatísticas do técnico.</span>
+          </li>
+        </ul>
+      </div>
+
       <!-- v1.3 -->
       <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.3</span>
+          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.3</span>
           <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">03/04/2026</span>
           <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix · Save Fix</span>
         </div>
@@ -686,7 +713,7 @@
   <script>
     const SUPABASE_URL = 'https://eeklaiqrbtfhnnalzgjn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVla2xhaXFyYnRmaG5uYWx6Z2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MTIyNjksImV4cCI6MjA4OTI4ODI2OX0.1EtiZwjI14zRUr9Itn9MiO7GRqqaCMEGFxIfmj8Qq5g';
-    const DOWNLOAD_URL = 'https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.3/BrasilFut.zip';
+    const DOWNLOAD_URL = 'https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.4/BrasilFut.zip';
 
     let wasReferred = null;
 

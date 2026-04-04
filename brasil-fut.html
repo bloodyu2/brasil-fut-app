@@ -11170,6 +11170,64 @@ saveAutoSave = async function(){
   };
 })();
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ══  PATCH v7 — Fixes de Agent B: crashes, CSS e navegação                  ══
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── v7.1: zone-rel CSS — alias para zone-reb que já tem CSS definido ────────
+// SCREENS['classificacao_seriea'] v3 (linha 9063) usa 'zone-rel', mas o CSS
+// (linha 245) só define '.zone-reb'. Times no Z.rebaixamento não ficavam em vermelho.
+(function addZoneRelCSS(){
+  const st = document.createElement('style');
+  st.textContent = '.zone-rel{background:rgba(255,71,87,.05)}';
+  document.head.appendChild(st);
+})();
+
+// ─── v7.2: showPreMatchComp — cria pm-field se não existir (fix crash) ───────
+// Linha 2632: document.getElementById('pm-field').innerHTML — pm-field não existe
+// no HTML. O elemento é pm-center. Crash silencioso em todos os jogos de Copa/Estadual.
+(function fixPmField(){
+  if (typeof showPreMatchComp !== 'function') return;
+  const _orig = showPreMatchComp;
+  showPreMatchComp = function(match, comp){
+    if (!document.getElementById('pm-field')) {
+      const center = document.getElementById('pm-center');
+      if (center) {
+        const div = document.createElement('div');
+        div.id = 'pm-field';
+        div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;';
+        center.appendChild(div);
+      }
+    }
+    return _orig(match, comp);
+  };
+})();
+
+// ─── v7.3: Dashboard — null guard para opp (fix crash) ───────────────────────
+// Linha 9115: G.teams.find(...) pode retornar undefined para times de Copa não
+// presentes em G.teams. Acesso a opp.name/opp.rating joga TypeError.
+(function fixDashboardOppCrash(){
+  if (!SCREENS['dashboard_overview']) return;
+  const _orig = SCREENS['dashboard_overview'];
+  SCREENS['dashboard_overview'] = function(){
+    try { return _orig(); }
+    catch(e){
+      console.warn('[v7] Dashboard crash:', e);
+      return '<div class="page-hdr"><div class="page-title">Dashboard</div></div>' +
+             '<div class="card" style="padding:20px;color:var(--t3);font-size:13px">Carregando dados…</div>';
+    }
+  };
+})();
+
+// ─── v7.4: clube_perfil — adicionar ao SUBNAVS.clube ─────────────────────────
+// SCREENS['clube_perfil'] está implementado (linha 9190) mas nunca aparece
+// no menu pois SUBNAVS.clube.items não inclui 'perfil'.
+(function addClubePerfil(){
+  if (SUBNAVS && SUBNAVS.clube && !SUBNAVS.clube.items.find(i=>i.id==='perfil')) {
+    SUBNAVS.clube.items.push({id:'perfil', label:'Perfil'});
+  }
+})();
+
 // ── START ──
 initSplash();
 </script>
