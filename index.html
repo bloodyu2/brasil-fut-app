@@ -622,32 +622,28 @@
           <div class="modal-title">Antes de baixar...</div>
           <div class="modal-sub">Confirme que leu as instruções para jogar sem problemas.</div>
         </div>
-        <button class="modal-close" onclick="closeModal('modalDownload')">✕</button>
+        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalDownload')" aria-label="Fechar">✕</button>
       </div>
       <div class="modal-body">
 
         <!-- CHECKLIST -->
         <div class="checklist" id="checklist">
-          <label class="check-item" onclick="toggleCheck(this)">
-            <input type="checkbox">
+          <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
             <span class="check-box"><span class="check-tick">✓</span></span>
             <span class="check-label">Vou extrair o ZIP em uma pasta fixa — ex: <code>C:\BrasilFut\</code> — e não vou movê-la depois.</span>
-          </label>
-          <label class="check-item" onclick="toggleCheck(this)">
-            <input type="checkbox">
+          </div>
+          <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
             <span class="check-box"><span class="check-tick">✓</span></span>
             <span class="check-label">Para jogar, vou abrir <code>JOGAR.bat</code> ou <code>BrasilFut.vbs</code> dentro da pasta.</span>
-          </label>
-          <label class="check-item" onclick="toggleCheck(this)">
-            <input type="checkbox">
+          </div>
+          <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
             <span class="check-box"><span class="check-tick">✓</span></span>
             <span class="check-label">Se o <code>JOGAR.bat</code> não funcionar, posso abrir direto o <code>brasil-fut.html</code> no navegador — funciona igual. Se quiser o launcher completo, baixo o Python em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener" onclick="event.stopPropagation()">python.org</a>.</span>
-          </label>
-          <label class="check-item" onclick="toggleCheck(this)">
-            <input type="checkbox">
+          </div>
+          <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
             <span class="check-box"><span class="check-tick">✓</span></span>
             <span class="check-label">Meu progresso é salvo automaticamente no navegador — enquanto eu usar o mesmo navegador e a mesma pasta, tudo fica guardado.</span>
-          </label>
+          </div>
         </div>
 
         <!-- INDICAÇÃO -->
@@ -689,7 +685,7 @@
           <div class="modal-title">Deixe seu feedback</div>
           <div class="modal-sub">O que achou do jogo? Bugs, sugestões, elogios — tudo é bem-vindo.</div>
         </div>
-        <button class="modal-close" onclick="closeModal('modalFeedback')">✕</button>
+        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalFeedback')" aria-label="Fechar">✕</button>
       </div>
       <div class="modal-body" id="feedbackBody">
         <textarea class="feedback-textarea" id="feedbackMsg"
