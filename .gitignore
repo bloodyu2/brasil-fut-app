@@ -7,3 +7,14 @@ Thumbs.db
 *.zip
 make_zip.ps1
 generate_icons.py
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# IDE / AI tools
+.claude/
+.cursor/
+.cursorrules
+CLAUDE.md
