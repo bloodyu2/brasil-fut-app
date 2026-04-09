@@ -1,0 +1,5 @@
+# Brasil Fut App/scripts/.gitignore
+cache/
+__pycache__/
+*.pyc
+.pytest_cache/
