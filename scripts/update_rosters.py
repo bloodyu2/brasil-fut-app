@@ -66,20 +66,20 @@ def assign_to_slots(players: list) -> list:
         by_pos[pos].sort(key=lambda x: x['ovr'], reverse=True)
 
     all_sorted = sorted(players, key=lambda x: x['ovr'], reverse=True)
-    used_ids = set()
+    used_names = set()
     result = []
 
     for slot_pos in SLOT_POSITIONS:
-        pool = [p for p in by_pos.get(slot_pos, []) if id(p) not in used_ids]
+        pool = [p for p in by_pos.get(slot_pos, []) if normalize_name(p['name']) not in used_names]
         if pool:
             chosen = pool[0]
         else:
-            fallback = [p for p in all_sorted if id(p) not in used_ids]
+            fallback = [p for p in all_sorted if normalize_name(p['name']) not in used_names]
             if not fallback:
                 result.append('Player|22|65')
                 continue
             chosen = fallback[0]
-        used_ids.add(id(chosen))
+        used_names.add(normalize_name(chosen['name']))
         result.append(f"{chosen['name']}|{chosen['age']}|{chosen['ovr']}")
 
     return result[:18]
