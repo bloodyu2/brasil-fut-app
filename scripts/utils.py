@@ -44,6 +44,12 @@ def pos_from_tm(tm_position: str) -> str:
     return 'MEI'  # Fallback
 
 
+def normalize_brasfoot_ovr(raw: int) -> int:
+    """Normalize Brasfoot OVR (scale ~30–220) to game scale (50–99)."""
+    clamped = max(30, min(220, raw))
+    return max(50, min(99, round(50 + (clamped - 30) / 190 * 49)))
+
+
 def normalize_name(name: str) -> str:
     """Lowercase, strip accents, collapse spaces — for fuzzy matching."""
     nfkd = unicodedata.normalize('NFKD', name)
