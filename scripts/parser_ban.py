@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 
 POS_CODE_MAP = {0: 'GOL', 1: 'ZAG', 2: 'LAT', 3: 'MEI', 4: 'ATA'}
 META_LEN = 30
-MIN_NAME_LEN = 2
+MIN_NAME_LEN = 4   # raised from 2 — filters short Java field names (sid, tid, aid, iHt)
 MAX_NAME_LEN = 60
-# Brasfoot OVR is on its own scale (not FIFA 0-99); real values observed 50-200+
-MIN_OVR = 30
+# Brasfoot OVR uses its own scale (30–220+); 29 and 11 are valid for reserve players
+MIN_OVR = 0
 MAX_OVR = 255
 MIN_AGE = 14
 MAX_AGE = 45
@@ -29,15 +29,18 @@ def _looks_like_player_name(name: str) -> bool:
     # Must be printable
     if not all(c.isprintable() for c in name):
         return False
-    # Reject strings that look like Java identifiers or hex colors
-    if name.startswith('#') or name.startswith('0x'):
+    # Reject Java artifacts that contain pipe, semicolon, slash
+    if any(c in name for c in '|;/\\()[]{}'):
+        return False
+    # Reject strings starting with non-letter (Java field prefixes like '#', '0x', digits)
+    if not name[0].isalpha():
         return False
     # Must contain at least one letter
     if not any(c.isalpha() for c in name):
         return False
-    # Reject if mostly digits or special chars
+    # Must be mostly alphabetic (letters, spaces, hyphens, apostrophes, periods)
     alpha_count = sum(1 for c in name if c.isalpha() or c in " '-.")
-    if alpha_count < len(name) * 0.6:
+    if alpha_count < len(name) * 0.7:
         return False
     return True
 

@@ -1,7 +1,12 @@
 # Brasil Fut App/scripts/update_rosters.py
 """
-Main pipeline: scrape Transfermarkt → cross-ref Brasfoot → patch brasil-fut.html.
+Main pipeline: Brasfoot .ban (primary squad) + Transfermarkt (market value enrichment) → patch brasil-fut.html.
 Usage: python update_rosters.py [--dry-run] [--slug corinthians_bra]
+
+Priority:
+  1. Brasfoot .ban file → correct player names, OVR, position, age
+  2. Transfermarkt → market value enrichment (optional; best-effort by name match)
+  3. If no Brasfoot file → fall back to TM-only (for European clubs not in Brasfoot)
 """
 import argparse
 import logging
@@ -31,26 +36,27 @@ SLOT_POSITIONS = [
 ]
 
 
-def load_brasfoot(slug: str) -> dict:
-    """Return normalized_name → {name, ovr, age, pos_code} with OVR already on game scale."""
+def load_brasfoot_squad(slug: str) -> list:
+    """Return all players from .ban file as list of enriched dicts (OVR already on game scale)."""
     ban_path = BRASFOOT_DIR / f'{slug}.ban'
     if not ban_path.exists():
-        return {}
-    players = parse_ban_file(str(ban_path))
-    result = {}
-    for p in players:
-        norm = normalize_name(p['name'])
-        result[norm] = {
+        return []
+    raw = parse_ban_file(str(ban_path))
+    result = []
+    for p in raw:
+        result.append({
             'name': p['name'],
             'ovr': normalize_brasfoot_ovr(p['ovr']),
-            'age': p['age'],
-            'pos_code': p['pos_code'],
-        }
+            'age': p['age'] if 14 <= p['age'] <= 45 else 22,
+            'pos': pos_code_to_game(p['pos_code']),
+            'mv_eur': 0,
+        })
     return result
 
 
 def pos_code_to_game(code: int) -> str:
-    return {0: 'GOL', 1: 'ZAG', 2: 'LAT', 3: 'MEI', 4: 'ATA'}.get(code, 'MEI')
+    # Observed from real Brasfoot data: 1=LAT (full backs), 2=ZAG (center backs)
+    return {0: 'GOL', 1: 'LAT', 2: 'ZAG', 3: 'MEI', 4: 'ATA'}.get(code, 'MEI')
 
 
 def assign_to_slots(players: list) -> list:
@@ -86,39 +92,51 @@ def assign_to_slots(players: list) -> list:
 
 
 def process_team(slug: str, url_path: str, verein_id: int, html: str) -> tuple:
-    """Scrape, cross-ref, and patch one team. Returns (updated_html, success)."""
+    """
+    Brasfoot-primary pipeline:
+      1. Load Brasfoot squad (correct player names + OVR)
+      2. Enrich with TM market values by name match (best-effort)
+      3. Fall back to TM-only if no Brasfoot file exists
+    Returns (updated_html, success).
+    """
     log.info(f'Processing {slug}...')
 
-    tm_players = fetch_squad(slug, url_path, verein_id)
-    if not tm_players:
-        log.warning(f'  Skipping {slug} — no Transfermarkt data')
-        return html, False
+    # ── 1. Primary source: Brasfoot ──────────────────────────────────────────
+    bf_players = load_brasfoot_squad(slug)
 
-    bf_lookup = load_brasfoot(slug)
+    # ── 2. Secondary: Transfermarkt market values (always try, even if BF has data) ──
+    tm_players = fetch_squad(slug, url_path, verein_id)
+    tm_by_name = {normalize_name(p['name']): p for p in tm_players}
+
     existing = extract_existing_players(html, slug)
 
-    enriched = []
-    for p in tm_players:
-        norm = normalize_name(p['name'])
-        tm_pos = pos_from_tm(p.get('tm_position', ''))
-
-        if norm in bf_lookup:
-            bf = bf_lookup[norm]
-            ovr = bf['ovr']  # already normalized
-            # Prefer TM position if it resolves to ALA (Brasfoot has no wingers)
-            pos = tm_pos if tm_pos == 'ALA' else pos_code_to_game(bf['pos_code'])
-        else:
-            ovr = ovr_from_mv(p.get('mv_eur', 0))
-            pos = tm_pos
-
-        age = p['age'] if p.get('age', 0) >= 15 else 22
-        enriched.append({
-            'name': p['name'],
-            'age': age,
-            'ovr': ovr,
-            'pos': pos,
-            'mv_eur': p.get('mv_eur', 0),
-        })
+    if bf_players:
+        # Brasfoot is truth — enrich with TM market values where names match
+        for p in bf_players:
+            norm = normalize_name(p['name'])
+            tm = tm_by_name.get(norm)
+            if tm:
+                p['mv_eur'] = tm.get('mv_eur', 0) or 0
+                # Update age from TM if it looks more current (and valid)
+                if tm.get('age', 0) >= 15:
+                    p['age'] = tm['age']
+        enriched = bf_players
+        log.info(f'  Brasfoot: {len(bf_players)} players; TM enriched {sum(1 for p in bf_players if p["mv_eur"]>0)}')
+    elif tm_players:
+        # No Brasfoot file — fall back to TM-only (European clubs)
+        enriched = []
+        for p in tm_players:
+            enriched.append({
+                'name': p['name'],
+                'age': p['age'] if p.get('age', 0) >= 15 else 22,
+                'ovr': ovr_from_mv(p.get('mv_eur', 0)),
+                'pos': pos_from_tm(p.get('tm_position', '')),
+                'mv_eur': p.get('mv_eur', 0),
+            })
+        log.info(f'  TM-only (no Brasfoot): {len(enriched)} players')
+    else:
+        log.warning(f'  Skipping {slug} — no data from Brasfoot or Transfermarkt')
+        return html, False
 
     preserve_existing_contract_ends(enriched, existing)
     player_strings = assign_to_slots(enriched)
@@ -128,7 +146,7 @@ def process_team(slug: str, url_path: str, verein_id: int, html: str) -> tuple:
         log.warning(f'  No change for {slug} — slug not found in WORLD_DB?')
         return html, False
 
-    log.info(f'  OK: {len(player_strings)} slots filled for {slug}')
+    log.info(f'  OK: {len(player_strings)} slots patched for {slug}')
     return updated, True
 
 
