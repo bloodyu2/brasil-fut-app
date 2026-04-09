@@ -11228,6 +11228,283 @@ saveAutoSave = async function(){
   }
 })();
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ══  PATCH v8 — Real Rosters OVR, Finance Charts, Player Profile            ══
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── v8.1: Read OVR from "Name|age|ovr" format in buildSquadFromNames ────────
+(function patchV8OVR(){
+  const _orig = buildSquadFromNames;
+  buildSquadFromNames = function(rating, names, cc){
+    const players = _orig(rating, names, cc);
+    if(!names || !names.length) return players;
+    players.forEach((player, i) => {
+      const raw = names[i];
+      if(!raw) return;
+      const parts = raw.split('|');
+      if(parts.length >= 3){
+        const storedOvr = parseInt(parts[2]);
+        if(storedOvr >= 40 && storedOvr <= 99 && !isNaN(storedOvr)){
+          // Rescale stats so calcOvr(stats) ≈ storedOvr
+          const currentOvr = player.ovr || 1;
+          const ratio = storedOvr / Math.max(1, currentOvr);
+          const s = player.stats;
+          Object.keys(s).forEach(k => {
+            s[k] = Math.max(10, Math.min(99, Math.round(s[k] * ratio)));
+          });
+          player.ovr = storedOvr;
+        }
+      }
+      // Initialize new fields
+      if(!player.form) player.form = [];
+    });
+    return players;
+  };
+})();
+
+// ─── v8.2: Initialize missing fields on game load ────────────────────────────
+(function patchV8InitFields(){
+  const _orig = typeof loadGame === 'function' ? loadGame : null;
+  if(!_orig) return;
+  loadGame = function(...args){
+    const result = _orig.apply(this, args);
+    if(G && G.teams){
+      G.teams.forEach(t => (t.players||[]).forEach(p => {
+        if(!p.form) p.form = [];
+        if(!p.goals && p.goals !== 0) p.goals = 0;
+        if(!p.assists && p.assists !== 0) p.assists = 0;
+        if(!p.games && p.games !== 0) p.games = 0;
+      }));
+    }
+    if(G && !G.financeHistory) G.financeHistory = [];
+    return result;
+  };
+})();
+
+// ─── v8.3: Finance history tracking (hook finishRound) ───────────────────────
+(function patchV8Finance(){
+  const _orig = typeof finishRound === 'function' ? finishRound : null;
+  if(!_orig) return;
+  finishRound = function(round){
+    const t = typeof getMyTeam === 'function' ? getMyTeam() : null;
+    const balBefore = t ? (t.balance || 0) : 0;
+    const income = t ? (t.wage||0) + ((t.stadium||0)*18) : 0;
+    const wages = t ? (t.players||[]).reduce((s,p)=>s+(p.salary||0),0) : 0;
+    const result = _orig.apply(this, arguments);
+    if(G){
+      if(!G.financeHistory) G.financeHistory = [];
+      const tAfter = typeof getMyTeam === 'function' ? getMyTeam() : null;
+      if(tAfter && G.currentRound % 4 === 0){
+        G.financeHistory.push({
+          round: G.currentRound,
+          balance: tAfter.balance || 0,
+          income: income,
+          expenses: wages,
+        });
+      }
+    }
+    return result;
+  };
+})();
+
+// ─── v8.4: Form tracking (update player.form after each match) ───────────────
+(function patchV8Form(){
+  // finishRound runs after match — update form for my players who played
+  const _prev = finishRound;
+  finishRound = function(round){
+    const result = _prev.apply(this, arguments);
+    const t = typeof getMyTeam === 'function' ? getMyTeam() : null;
+    if(t && t.players){
+      t.players.forEach(p => {
+        if(typeof p.lastRating === 'number'){
+          if(!p.form) p.form = [];
+          p.form.push(p.lastRating);
+          if(p.form.length > 5) p.form = p.form.slice(-5);
+        }
+      });
+    }
+    return result;
+  };
+})();
+
+// ─── v8.5: Enhanced finance screen with projection + SVG charts ───────────────
+(function patchV8FinanceScreen(){
+  const _origScreen = SCREENS['financas_resumo'];
+  if(!_origScreen) return;
+
+  function _fmt(n){
+    if(Math.abs(n)>=1e6) return 'R$ '+(n/1e6).toFixed(1)+'M';
+    if(Math.abs(n)>=1e3) return 'R$ '+(n/1e3).toFixed(0)+'K';
+    return 'R$ '+Math.round(n);
+  }
+
+  function _projectEnd(){
+    if(!G||!G.financeHistory||!G.financeHistory.length) return null;
+    const last5 = G.financeHistory.slice(-5);
+    const avgNet = last5.reduce((s,r)=>s+r.income-r.expenses,0)/last5.length;
+    const total = G.leagueFixtures ? G.leagueFixtures.length : 38;
+    const remaining = total - (G.currentRound||0);
+    const t = getMyTeam();
+    return (t?t.balance:0) + avgNet * remaining;
+  }
+
+  function _lineSVG(hist){
+    if(!hist||hist.length<2) return '<div style="text-align:center;color:var(--t3);padding:20px;font-size:13px">Jogue mais rodadas para ver o gráfico</div>';
+    const W=320,H=130,pl=10,pr=10,pt=16,pb=22;
+    const vals=hist.map(h=>h.balance);
+    const minV=Math.min(...vals),maxV=Math.max(...vals),range=maxV-minV||1;
+    const cw=W-pl-pr,ch=H-pt-pb;
+    const pts=hist.map((h,i)=>`${(pl+i/(hist.length-1)*cw).toFixed(1)},${(pt+(1-(h.balance-minV)/range)*ch).toFixed(1)}`).join(' ');
+    const zeroY=pt+(1-(0-minV)/range)*ch;
+    const zeroLine=(minV<0&&maxV>0)?`<line x1="${pl}" y1="${zeroY.toFixed(1)}" x2="${pl+cw}" y2="${zeroY.toFixed(1)}" stroke="rgba(255,255,255,0.12)" stroke-dasharray="4,3"/>`:'';
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px">
+      <rect width="${W}" height="${H}" fill="#0D1117" rx="6"/>
+      ${zeroLine}
+      <polyline points="${pts}" fill="none" stroke="#00D166" stroke-width="2" stroke-linejoin="round"/>
+      <text x="${pl}" y="${H-5}" fill="var(--t3)" font-size="10">Rd ${hist[0].round}</text>
+      <text x="${pl+cw}" y="${H-5}" fill="var(--t3)" font-size="10" text-anchor="end">Rd ${hist[hist.length-1].round}</text>
+    </svg>`;
+  }
+
+  function _barSVG(hist){
+    const recent=hist.slice(-20);
+    if(!recent.length) return '';
+    const W=320,H=110,pl=10,pr=10,pt=10,pb=20;
+    const cw=W-pl-pr,ch=H-pt-pb;
+    const maxVal=Math.max(...recent.flatMap(h=>[h.income,h.expenses]),1);
+    const bw=Math.max(2,cw/recent.length/2-1);
+    const bars=recent.map((h,i)=>{
+      const x=pl+i*(cw/recent.length);
+      const iH=(h.income/maxVal*ch).toFixed(1);
+      const eH=(h.expenses/maxVal*ch).toFixed(1);
+      const label=(i===0||recent[i].round%5===0)?`<text x="${(x+bw).toFixed(1)}" y="${H-4}" fill="var(--t3)" font-size="9" text-anchor="middle">${h.round}</text>`:'';
+      return `<rect x="${x.toFixed(1)}" y="${(pt+ch-iH).toFixed(1)}" width="${bw.toFixed(1)}" height="${iH}" fill="#00D166" rx="1"/>
+              <rect x="${(x+bw+1).toFixed(1)}" y="${(pt+ch-eH).toFixed(1)}" width="${bw.toFixed(1)}" height="${eH}" fill="#FF4757" rx="1"/>
+              ${label}`;
+    }).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px">
+      <rect width="${W}" height="${H}" fill="#0D1117" rx="6"/>
+      ${bars}
+    </svg>`;
+  }
+
+  SCREENS['financas_resumo'] = function(){
+    const base = _origScreen();
+    const hist = (G && G.financeHistory) || [];
+    const proj = _projectEnd();
+    const projColor = proj === null ? 'var(--t3)' : (proj >= 0 ? 'var(--g)' : 'var(--rd)');
+    const projHTML = proj !== null
+      ? `<div class="card" style="margin-bottom:12px">
+          <div style="font-size:12px;color:var(--t3);margin-bottom:4px">Projeção fim de temporada</div>
+          <div style="font-size:22px;font-weight:800;font-family:var(--fd);color:${projColor}">${_fmt(proj)}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">Baseado na média das últimas ${Math.min(5,hist.length)} rodadas</div>
+        </div>` : '';
+
+    const chartsHTML = hist.length >= 2
+      ? `<div class="card" style="margin-bottom:12px">
+          <div class="card-title">Evolução do Saldo</div>
+          ${_lineSVG(hist)}
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-title">Receita <span style="color:#00D166">&#9632;</span> vs Despesas <span style="color:#FF4757">&#9632;</span></div>
+          ${_barSVG(hist)}
+        </div>` : '';
+
+    return projHTML + chartsHTML + base;
+  };
+})();
+
+// ─── v8.6: Enhanced player profile with form + physical attributes ────────────
+(function patchV8Profile(){
+  const _prev = showPlayer;
+  showPlayer = function(playerId){
+    const p = G.teams.flatMap(t=>t.players||[]).find(x=>x.id===playerId);
+    if(!p){ if(_prev) _prev(playerId); return; }
+
+    // Form dots (last 5 match ratings)
+    const form = p.form || [];
+    const formHTML = form.length
+      ? '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--bd)">'
+        + '<span style="color:var(--t3);font-size:12px;min-width:40px">Forma</span>'
+        + form.slice(-5).map(r=>{
+            const color = r>=7?'#00D166':(r>=6?'#FFD662':'#FF4757');
+            return `<div style="width:10px;height:10px;border-radius:50%;background:${color}" title="${r.toFixed(1)}"></div>`;
+          }).join('')
+        + '</div>'
+      : '';
+
+    // Physical attributes (deterministic from OVR + pos)
+    const ovr = p.ovr||65;
+    const posOff = {GOL:0,ZAG:5,LAT:10,VOL:3,MEI:7,ALA:12,ATA:14}[p.pos]||0;
+    const pace     = Math.max(50,Math.min(99, ovr - 5 + (posOff % 15)));
+    const strength = Math.max(50,Math.min(99, ovr + 3 - (posOff % 10)));
+    const stamina  = Math.max(50,Math.min(99, ovr - 2 + ((posOff*3) % 12)));
+
+    const bar = (label, val) =>
+      `<div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+        <span style="color:var(--t3);font-size:12px;min-width:80px">${label}</span>
+        <div style="flex:1;background:var(--s3);border-radius:3px;height:5px">
+          <div style="background:#00D166;width:${val}%;height:100%;border-radius:3px"></div>
+        </div>
+        <span style="font-size:12px;font-family:var(--fm);min-width:24px;text-align:right">${val}</span>
+      </div>`;
+
+    const physHTML = `<div style="padding:6px 0;border-bottom:1px solid var(--bd)">
+      ${bar('Velocidade', pace)}
+      ${bar('Forca', strength)}
+      ${bar('Resistencia', stamina)}
+    </div>`;
+
+    // Career stats
+    const careerHTML = (p.games||0) > 0
+      ? `<div style="display:flex;gap:16px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12px">
+          <div><span style="color:var(--t3)">Jogos </span><strong>${p.games||0}</strong></div>
+          <div><span style="color:var(--t3)">Gols </span><strong>${p.goals||0}</strong></div>
+          <div><span style="color:var(--t3)">Assist. </span><strong>${p.assists||0}</strong></div>
+        </div>` : '';
+
+    // Market value
+    const mv = typeof calcMarketValue === 'function' ? calcMarketValue(p) : 0;
+    const fmtVal = typeof window.fmtVal === 'function' ? window.fmtVal : (v=>v>=1e6?'€'+(v/1e6).toFixed(1)+'M':v>=1e3?'€'+(v/1e3).toFixed(0)+'K':'€'+v);
+
+    showModal(`<div class="modal-title">${p.name}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="font-size:36px;font-weight:900;font-family:var(--fd);color:${typeof ratingColor==='function'?ratingColor(p.ovr/10):'var(--g)'}">${p.ovr}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">${p.name}</div>
+          <div style="font-size:12px;color:var(--t3)">${p.pos} · ${p.age} anos · ${p.nat||''}</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="font-size:16px;font-weight:800;color:var(--g)">${fmtVal(mv)}</div>
+          <div style="font-size:11px;color:var(--t3)">Valor de mercado</div>
+        </div>
+      </div>
+      ${formHTML}
+      ${careerHTML}
+      ${physHTML}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+        <span style="color:var(--t3)">Energia</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="background:var(--s3);border-radius:3px;height:5px;width:80px"><div style="background:${(p.energy||100)>80?'var(--g)':(p.energy||100)>50?'var(--au)':'var(--rd)'};width:${p.energy||100}%;height:100%;border-radius:3px"></div></div>
+          <span style="font-family:var(--fm);font-size:12px">${p.energy||100}%</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+        <span style="color:var(--t3)">Moral</span><span>${p.moral||70}%</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+        <span style="color:var(--t3)">Salario</span><span>${typeof fmtK==='function'?fmtK(p.salary||0):p.salary+'/sem'}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+        <span style="color:var(--t3)">Contrato</span><span style="color:${(p.contractEnd||0)<=6?'var(--au)':'var(--t1)'}">${p.contractEnd||0} sem restantes</span>
+      </div>
+      <div class="modal-footer">
+        ${(p.forSale)?`<button class="btn btn-ghost btn-sm" onclick="toggleSale('${p.id}');closeModal()">Retirar da venda</button>`:`<button class="btn btn-secondary btn-sm" onclick="toggleSale('${p.id}');closeModal()">Colocar a venda</button>`}
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">Fechar</button>
+      </div>`);
+  };
+})();
+
 // ── START ──
 initSplash();
 </script>
