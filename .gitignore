@@ -19,3 +19,5 @@ generate_icons.py
 .cursorrules
 CLAUDE.md
 scripts/cache/
+
+*.md.backup
