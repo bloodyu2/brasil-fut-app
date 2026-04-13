@@ -72,6 +72,19 @@ def pos_code_to_game(code: int) -> str:
     return {0: 'GOL', 1: 'LAT', 2: 'ZAG', 3: 'MEI', 4: 'ATA'}.get(code, 'MEI')
 
 
+_STADIUM_WORDS = {'maracanã','arena','estádio','estadio','stadium','campo','vila','parque',
+                  'couto','mineirão','mineiro','morumbi','itaquerão','pacaembu','beira-rio',
+                  'allianz','neo quimica'}
+
+def _is_player_name(name: str) -> bool:
+    low = name.strip().lower()
+    for w in _STADIUM_WORDS:
+        if w in low:
+            return False
+    if len(low.split()) > 4:
+        return False
+    return True
+
 def load_ban(slug: str) -> list:
     """Parse .ban file for slug. Returns list of {name, ovr, raw_ovr, age, pos} dicts.
     raw_ovr is kept for tiebreaking when normalized OVR values collide (e.g. both map to 50).
@@ -83,6 +96,8 @@ def load_ban(slug: str) -> list:
     raw = parse_ban_file(str(path))
     result = []
     for p in raw:
+        if not _is_player_name(p['name']):
+            continue
         raw_ovr = p['ovr']
         ovr = normalize_brasfoot_ovr(raw_ovr)
         age = p['age'] if 14 <= p['age'] <= 45 else 22
