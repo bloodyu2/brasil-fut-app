@@ -5416,14 +5416,22 @@ function buildSquadFromNames(rating,names,country){
   const players=[];
   for(let i=0;i<allPos.length;i++){
     const pos=allPos[i];const isStarter=i<positions.length;
-    const name=(names&&names[i])?names[i]:((FIRST_NAMES&&FIRST_NAMES.length?FIRST_NAMES[Math.floor(Math.random()*FIRST_NAMES.length)]:'J')+' '+(PLAYER_NAMES&&PLAYER_NAMES.length?PLAYER_NAMES[Math.floor(Math.random()*PLAYER_NAMES.length)]:'Silva'));
-    const base=isStarter?rating:Math.max(40,rating-Math.floor(Math.random()*16)-5);
-    const spread=10;const age=isStarter?(21+Math.floor(Math.random()*11)):(18+Math.floor(Math.random()*18));
+    const rawName=(names&&names[i])?names[i]:null;
+    // Support "Name|age|ovr" format for real player data from Brasfoot
+    const parts=rawName?rawName.split('|'):null;
+    const name=(parts&&parts[0])?parts[0]:((FIRST_NAMES&&FIRST_NAMES.length?FIRST_NAMES[Math.floor(Math.random()*FIRST_NAMES.length)]:'J')+' '+(PLAYER_NAMES&&PLAYER_NAMES.length?PLAYER_NAMES[Math.floor(Math.random()*PLAYER_NAMES.length)]:'Silva'));
+    const realAge=(parts&&parts[1])?parseInt(parts[1]):0;
+    const realOvr=(parts&&parts[2])?parseInt(parts[2]):0;
+    // Use real Brasfoot OVR as stat base when available; fallback to team rating
+    const base=realOvr>0?realOvr:(isStarter?rating:Math.max(40,rating-Math.floor(Math.random()*16)-5));
+    const spread=8;
     const isGK=pos==='GOL';const isFWD=pos==='ATA'||pos==='ALA';
     const isDEF=pos==='ZAG'||pos==='LAT';const isMID=pos==='VOL'||pos==='MEI';
     const s=(offset=0)=>Math.max(10,Math.min(99,base+Math.floor(Math.random()*(spread*2+1))-spread+offset));
     const stats={gol:isGK?s(15):s(-40),agi:isFWD?s(10):s(),fin:isFWD?s(15):isDEF?s(-25):s(-5),
       pas:isMID?s(10):s(),des:isDEF||isMID?s(10):s(-10),arm:isMID?s(15):s(-10),tec:s()};
+    const ageDefault=isGK?(18+Math.floor(Math.random()*20)):(isFWD?18+Math.floor(Math.random()*14):(isDEF?20+Math.floor(Math.random()*14):19+Math.floor(Math.random()*14)));
+    const age=(realAge>=15&&realAge<=45)?realAge:(isStarter?ageDefault:18+Math.floor(Math.random()*18));
     players.push({id:Math.random().toString(36).slice(2,10),name,pos,age,nat:country||'BRA',stats,
       ovr:calcOvr(stats),moral:65+Math.floor(Math.random()*31),energy:80+Math.floor(Math.random()*21),
       salary:Math.round(base*800+Math.floor(Math.random()*10000)-5000),
@@ -7719,18 +7727,21 @@ function generatePlayer(teamRating, pos, isStarter=true, cc='BRA'){
 
 // buildSquadFromNames com cc correto
 function buildSquadFromNames(rating, names, cc){
-  const positions=['GOL','ZAG','ZAG','LAT','LAT','VOL','VOL','MEI','MEI','ALA','ATA','ZAG','LAT','MEI','VOL','ALA','ATA','GOL'];
+  // 22 slots: 11 starters + 7 bench + 4 extra deep bench (matches buildSquad output)
+  const positions=['GOL','ZAG','ZAG','LAT','LAT','VOL','VOL','MEI','MEI','ALA','ATA','ZAG','LAT','MEI','VOL','ALA','ATA','GOL','ZAG','VOL','ATA','LAT'];
   return positions.map((pos,i)=>{
     const starterCutoff=11;
     const isStarter=i<starterCutoff;
     const rawName=(names&&names[i])?names[i]:null;
-    // Support "Name|age" format for real player ages
+    // Support "Name|age|ovr" format for real player data from Brasfoot
     const parts=rawName?rawName.split('|'):null;
     const name=(parts&&parts[0])?parts[0]:generatePlayerName(cc||'BRA');
     const realAge=(parts&&parts[1])?parseInt(parts[1]):0;
+    const realOvr=(parts&&parts[2])?parseInt(parts[2]):0;
     const isGK=pos==='GOL',isFWD=pos==='ATA'||pos==='ALA',isDEF=pos==='ZAG'||pos==='LAT',isMID=pos==='VOL'||pos==='MEI';
-    const base=isStarter?rating:rating-rng(5,20);
-    const spread=12;
+    // Use real Brasfoot OVR as stat base when available; fallback to team rating
+    const base=realOvr>0?realOvr:(isStarter?rating:rating-rng(5,20));
+    const spread=8;
     const s=(off=0)=>Math.max(10,Math.min(99,base+rng(-spread,spread)+off));
     const stats={gol:isGK?s(15):s(-40),agi:isFWD?s(10):s(),fin:isFWD?s(15):isDEF?s(-25):s(-5),pas:isMID?s(10):s(),des:isDEF||isMID?s(10):s(-10),arm:isMID?s(15):s(-10),tec:s()};
     // Use real age from .ban data; fallback to realistic random by position
