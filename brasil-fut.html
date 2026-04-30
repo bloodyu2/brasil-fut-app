@@ -6951,7 +6951,6 @@ function doSaveToSlot(slot){
     closeModal();
     notify(`💾 Salvo: "${label}" (${sizeKB} KB)`);
   }catch(e){
-    console.error('Save error:', e);
     notify('Erro ao salvar! Tente limpar saves antigos.','err');
   }
 }
@@ -6962,7 +6961,7 @@ function saveAutoSave(){
     const label = myT ? `${myT.name} — T${G.season} Rd${G.currentRound}` : 'Auto';
     const slim = _slimG(G);
     localStorage.setItem('bf_autosave', JSON.stringify({G: slim, ts: Date.now(), label}));
-  }catch(e){ console.warn('AutoSave failed:', e); }
+  }catch(e){ /* AutoSave failed silently */ }
 }
 
 function doLoadData(savedG){
@@ -7074,7 +7073,7 @@ async function _doSaveFile() {
       return;
     } catch (e) {
       if (e.name === 'AbortError') return; // usuario cancelou
-      console.warn('showSaveFilePicker failed, fallback to download', e);
+      /* showSaveFilePicker not available, falling back to download */
     }
   }
   // Fallback: download automático
@@ -7100,7 +7099,6 @@ function _doSaveLocal() {
       notify(`💾 Salvo localmente: "${label}" (${kb} KB)`);
     });
   } catch(e) {
-    console.error(e);
     notify('Erro ao salvar!', 'err');
   }
 }
@@ -7113,7 +7111,7 @@ function _idbOpen(cb) {
     if (!db.objectStoreNames.contains('saves')) db.createObjectStore('saves', { keyPath: 'label' });
   };
   req.onsuccess = e => cb(e.target.result);
-  req.onerror = e => { console.error('IDB error', e); cb(null); };
+  req.onerror = e => { cb(null); };
 }
 
 function _idbSave(label, payload, done) {
@@ -7227,7 +7225,7 @@ async function _loadFromFile() {
       return;
     } catch(e) {
       if (e.name === 'AbortError') return;
-      console.warn('showOpenFilePicker failed, fallback', e);
+      /* showOpenFilePicker not available, falling back to input */
     }
   }
   // Fallback: input file
@@ -7264,7 +7262,7 @@ function saveAutoSave() {
     const label = myT ? `${myT.name} — T${G.season} Rd${G.currentRound}` : 'Auto';
     const slim = _slimG(G);
     _idbSave('__autosave__', { G: slim, ts: Date.now(), label, team: myT?.name, season: G.season, serie: G.leagueName, country: G.countryCode }, () => {});
-  } catch(e) { console.warn('AutoSave failed:', e); }
+  } catch(e) { /* AutoSave failed silently */ }
 }
 
 function showOptions() {
@@ -7379,7 +7377,7 @@ async function _getSavesDir(askIfMissing = true) {
     return savesDir;
   } catch(e) {
     document.getElementById('dir-picker-hint')?.remove();
-    if (e.name !== 'AbortError') console.warn('showDirectoryPicker:', e);
+    /* showDirectoryPicker cancelled or unavailable */
     return null;
   }
 }
@@ -7440,7 +7438,7 @@ async function _doSave() {
       _autoSaveToDir(dir);
       return;
     } catch(e) {
-      console.warn('Erro ao escrever arquivo:', e);
+      /* write failed, falling back to download */
     }
   }
   // Fallback: download
@@ -7461,7 +7459,7 @@ async function saveAutoSave() {
     const label = myT ? `Auto — ${myT.name} T${G.season} Rd${G.currentRound}` : 'Auto';
     const slim = _slimG(G);
     _idbPut('saves', '__autosave__', { G: slim, ts: Date.now(), label, team: myT?.name, season: G.season, serie: G.leagueName, country: G.countryCode });
-  } catch(e) { console.warn('AutoSave failed:', e); }
+  } catch(e) { /* AutoSave failed silently */ }
 }
 
 async function _autoSaveToDir(dir) {
@@ -7473,7 +7471,7 @@ async function _autoSaveToDir(dir) {
     const writable = await fh.createWritable();
     await writable.write(JSON.stringify(payload));
     await writable.close();
-  } catch(e) { console.warn('AutoSave dir failed:', e); }
+  } catch(e) { /* AutoSave dir failed silently */ }
 }
 
 // ── CARREGAR ──
@@ -7496,7 +7494,7 @@ async function loadGame() {
         saves.push({ name, handle: entry });
       }
     }
-  } catch(e) { console.warn('Erro ao listar saves:', e); }
+  } catch(e) { /* listing saves failed silently */ }
 
   // Lê autosave se existir
   let autoData = null;
@@ -7580,7 +7578,6 @@ async function _loadFromHandle(handle) {
     if (data) doLoadData(data.G || data);
     else notify('Erro ao carregar!', 'err');
   } catch(e) {
-    console.error(e);
     notify('Erro ao ler arquivo!', 'err');
   }
 }
@@ -11343,7 +11340,7 @@ saveAutoSave = async function(){
     try { localStorage.setItem('bf_autosave', JSON.stringify(payload)); } catch(e) {}
     // IDB → backup para saves grandes
     if (typeof _idbPut === 'function') try { _idbPut('saves', '__autosave__', payload); } catch(e) {}
-  } catch(e) { console.warn('AutoSave v6:', e); }
+  } catch(e) { /* AutoSave v6 failed silently */ }
 };
 
 // ─── v6.2: conductPeneira — cooldown 5 s evita dupla-chamada (fix BUG-18) ────
@@ -11415,7 +11412,7 @@ saveAutoSave = async function(){
   SCREENS['dashboard_overview'] = function(){
     try { return _orig(); }
     catch(e){
-      console.warn('[v7] Dashboard crash:', e);
+      /* dashboard crash caught, rendering fallback */
       return '<div class="page-hdr"><div class="page-title">Dashboard</div></div>' +
              '<div class="card" style="padding:20px;color:var(--t3);font-size:13px">Carregando dados…</div>';
     }
