@@ -25,3 +25,7 @@ scripts/cache/
 .env*.local
 .next/
 .vercel/
+out/
+*.tsbuildinfo
+.turbo/
+coverage/
