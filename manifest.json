@@ -1,0 +1,22 @@
+{
+  "name": "Brasil Fut",
+  "short_name": "Brasil Fut",
+  "description": "Brasil Fut - Gerenciador de Futebol",
+  "start_url": "./brasil-fut.html",
+  "display": "standalone",
+  "background_color": "#060A0F",
+  "theme_color": "#00D166",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "assets/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ]
+}
