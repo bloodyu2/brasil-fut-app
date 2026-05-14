@@ -12,6 +12,7 @@ generate_icons.py
 .env
 .env.local
 .env.*.local
+.env*.local
 
 # IDE / AI tools
 .claude/
@@ -22,3 +23,10 @@ scripts/cache/
 
 *.md.backup
 downloads/
+
+.next/
+.vercel/
+out/
+*.tsbuildinfo
+.turbo/
+coverage/
