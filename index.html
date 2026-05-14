@@ -796,7 +796,8 @@
   <script>
     const SUPABASE_URL = 'https://eeklaiqrbtfhnnalzgjn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVla2xhaXFyYnRmaG5uYWx6Z2puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MTIyNjksImV4cCI6MjA4OTI4ODI2OX0.1EtiZwjI14zRUr9Itn9MiO7GRqqaCMEGFxIfmj8Qq5g';
-    const DOWNLOAD_URL = 'https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.6/BrasilFut.zip';
+    const DOWNLOAD_URL = 'downloads/BrasilFut.zip';
+    const APK_URL = 'downloads/brasil-fut.apk';
 
     let wasReferred = null;
 
@@ -880,8 +881,17 @@
       const name = wasReferred ? document.getElementById('referralName').value.trim() : null;
       // Dispara o download imediatamente
       const a = document.createElement('a');
+      // On mobile, open the game (PWA). On desktop, download ZIP.
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        window.location.href = 'brasil-fut.html';
+        return;
+      }
+
       a.href = DOWNLOAD_URL;
       a.download = 'BrasilFut.zip';
+
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
