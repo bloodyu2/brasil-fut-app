@@ -2,12 +2,23 @@
   "name": "Brasil Fut App",
   "short_name": "BrasilFut",
   "description": "Gerenciador de futebol offline — monte elencos, defina táticas, dispute campeonatos.",
-  "start_url": "/",
+  "start_url": "./brasil-fut.html",
   "display": "standalone",
   "background_color": "#060A0F",
-  "theme_color": "#009C3B",
+  "theme_color": "#00D166",
   "lang": "pt-BR",
+  "orientation": "landscape",
   "icons": [
+    {
+      "src": "assets/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
     {
       "src": "/assets/icon-192.png",
       "sizes": "192x192",

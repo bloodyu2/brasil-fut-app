@@ -12,6 +12,7 @@ generate_icons.py
 .env
 .env.local
 .env.*.local
+.env*.local
 
 # IDE / AI tools
 .claude/
@@ -21,8 +22,8 @@ CLAUDE.md
 scripts/cache/
 
 *.md.backup
+downloads/
 
-.env*.local
 .next/
 .vercel/
 out/
