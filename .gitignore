@@ -22,6 +22,10 @@ CLAUDE.md
 scripts/cache/
 
 *.md.backup
+memory.md
+_orig_*.txt
+_chk.js
+_tmp_check.js
 downloads/
 
 .next/
