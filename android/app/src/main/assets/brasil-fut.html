@@ -379,6 +379,30 @@ body{font-size:15px}
 .splash-item{padding:15px 18px;font-size:14px;border-radius:10px;margin-bottom:6px}
 .splash-item:hover{transform:translateX(6px)}
 
+/* Mobile portrait */
+@media (max-width:480px){
+  body.portrait #app{grid-template-columns:1fr;grid-template-rows:40px 1fr 44px}
+  body.portrait #topbar{gap:4px;padding:0 6px;font-size:11px}
+  body.portrait #topbar .tb-stat,
+  body.portrait #topbar .tb-div,
+  body.portrait #topbar .tb-btn{display:none}
+  body.portrait #topbar .tb-spacer{display:none}
+  body.portrait #topbar #tb-season{display:none}
+  body.portrait #rail{flex-direction:row;border-right:none;border-top:1px solid var(--bd);padding:4px 2px;gap:0;overflow-x:auto}
+  body.portrait #rail .ri{width:34px;height:34px;flex-shrink:0;font-size:15px}
+  body.portrait #rail .ri-spacer{display:none}
+  body.portrait #subnav{border-right:none;border-bottom:1px solid var(--bd);max-height:35vh}
+  body.portrait .page-hdr{flex-direction:column;align-items:flex-start;gap:6px}
+  body.portrait .page-tabs{margin-left:0}
+  body.portrait table{font-size:11px}
+  body.portrait .field-wrap{transform:scale(.55);transform-origin:top center;margin-bottom:-80px}
+  body.portrait .splash-right{width:100%;border-left:none;border-top:1px solid var(--bd);padding:20px 16px}
+  body.portrait .splash-left{display:none}
+  body.portrait #splash{flex-direction:column-reverse}
+  body.portrait .btn{font-size:12px;padding:8px 12px}
+  body.portrait .modal{max-width:95vw}
+}
+
 /* Notificações */
 .notif-item{font-size:13px;border-radius:10px;padding:12px 16px;max-width:340px;backdrop-filter:blur(8px)}
 
@@ -627,6 +651,7 @@ body{font-size:15px}
     <div class="ri" data-section="copas" onclick="setSection('copas')" title="Copas"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
     <div class="ri" data-section="clube" onclick="setSection('clube')" title="Clube"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="M2 12v6c0 2.21 4.48 4 10 4s10-1.79 10-4v-6"/><path d="M2 12c0 2.21 4.48 4 10 4s10-1.79 10-4"/></svg></div>
     <div class="ri-spacer"></div>
+    <div class="ri" onclick="goToMenu()" title="Menu Principal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
   </div>
   <div id="subnav"></div>
   <div id="content"></div>
@@ -7712,9 +7737,24 @@ function showOptions() {
       <button class="btn btn-secondary" onclick="closeModal();saveGame()">💾 Salvar Jogo</button>
       <button class="btn btn-secondary" onclick="closeModal();loadGame()">📂 Carregar Jogo</button>
       <button class="btn btn-danger" onclick="if(confirm('Iniciar novo jogo? Salve antes!')){localStorage.clear();location.reload()}">🔄 Novo Jogo</button>
+      <button class="btn btn-ghost" onclick="closeModal();goToMenu()">← Menu Principal</button>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Fechar</button></div>`);
 }
+
+function goToMenu(){
+  closeModal();
+  if(typeof G !== 'undefined') G = null;
+  document.getElementById('splash').style.display='flex';
+  if(window.initSplash) initSplash();
+}
+function checkOrientation(){
+  if(window.innerWidth<480) document.body.classList.add('portrait');
+  else document.body.classList.remove('portrait');
+}
+window.addEventListener('load',checkOrientation);
+window.addEventListener('resize',checkOrientation);
+window.addEventListener('orientationchange',function(){setTimeout(checkOrientation,300)});
 
 // ══════════════════════════════════════════════════════════════
 //  BRASIL FUT — PATCH DEFINITIVO
