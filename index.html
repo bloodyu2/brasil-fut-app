@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow, noarchive, nositelinkssearchbox">
-  <title>Brasil Fut — Gerenciador de Futebol</title>
+  <meta name="description" content="Brasil Fut — Gerenciador de futebol offline. Monte elencos, defina táticas, dispute campeonatos. Disponível para Windows, Android e navegador.">
+  <title>Brasil Fut — Gerenciador de Futebol Offline</title>
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -19,9 +19,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--t1); font-family: var(--fb); min-height: 100vh; overflow-x: hidden; }
-    section[id], div[id] { scroll-margin-top: 72px; }
+    a { color: inherit; text-decoration: none; }
+    section[id] { scroll-margin-top: 72px; }
 
-    /* NAV */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       background: rgba(6,10,15,.92); backdrop-filter: blur(12px);
@@ -38,6 +38,12 @@
       font-family: var(--fm); font-size: 10px; font-weight: 600; color: #000;
       background: var(--g); padding: 2px 7px; border-radius: 99px; letter-spacing: .05em;
     }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      font-size: 13px; color: var(--t3); padding: 6px 12px; border-radius: 8px;
+      border: 1px solid transparent; font-weight: 500; transition: all .15s;
+    }
+    .nav-link:hover { color: var(--t1); border-color: var(--bd); }
     .btn-feedback {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--s2); border: 1px solid var(--bd); color: var(--t2);
@@ -47,7 +53,6 @@
     }
     .btn-feedback:hover { border-color: var(--g); color: var(--t1); background: var(--s3); }
 
-    /* HERO */
     .hero {
       min-height: 100vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -68,10 +73,10 @@
     }
     .hero h1 span { color: var(--g); }
     .hero-sub {
-      font-size: clamp(15px,2vw,18px); color: var(--t2); max-width: 500px;
-      line-height: 1.65; margin-bottom: 48px; font-weight: 400;
+      font-size: clamp(15px,2vw,18px); color: var(--t2); max-width: 560px;
+      line-height: 1.65; margin-bottom: 36px; font-weight: 400;
     }
-    .btn-download {
+    .btn-primary {
       display: inline-flex; align-items: center; gap: 10px;
       background: var(--g); color: #000; font-family: var(--fd); font-weight: 800;
       font-size: 16px; padding: 16px 36px; border-radius: 12px;
@@ -79,85 +84,18 @@
       transition: background .15s, transform .1s, box-shadow .15s;
       box-shadow: 0 0 32px rgba(0,209,102,.25); letter-spacing: -.01em;
     }
-    .btn-download:hover { background: var(--gd); transform: translateY(-2px); box-shadow: 0 0 48px rgba(0,209,102,.35); }
-    .btn-meta {
-      margin-top: 14px; font-size: 12px; color: var(--t3); font-family: var(--fm);
-      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    .btn-primary:hover { background: var(--gd); transform: translateY(-2px); box-shadow: 0 0 48px rgba(0,209,102,.35); }
+    .hero-platforms {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 12px;
     }
-
-    /* STATS */
-    .stats {
-      display: flex; border-top: 1px solid var(--bd); border-bottom: 1px solid var(--bd);
-      background: var(--s0); overflow-x: auto;
-    }
-    .stat { flex: 1; min-width: 120px; padding: 28px 16px; text-align: center; border-right: 1px solid var(--bd); }
-    .stat:last-child { border-right: none; }
-    .stat-val { font-family: var(--fm); font-size: 26px; font-weight: 600; color: var(--g); }
-    .stat-lbl { font-size: 12px; color: var(--t3); margin-top: 4px; }
-
-    /* SECTION */
-    .section { max-width: 760px; margin: 0 auto; padding: 72px 24px; }
-    .section-title { font-family: var(--fd); font-size: clamp(22px,3.5vw,32px); font-weight: 800; letter-spacing: -.03em; margin-bottom: 8px; }
-    .section-title span { color: var(--g); }
-    .section-sub { color: var(--t2); font-size: 14px; margin-bottom: 36px; }
-
-    /* FEATURES */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 12px; margin-bottom: 64px; }
-    .feature-card { background: var(--s1); border: 1px solid var(--bd); border-radius: 12px; padding: 20px; }
-    .feature-icon { font-size: 24px; margin-bottom: 10px; }
-    .feature-title { font-family: var(--fd); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-    .feature-desc { font-size: 13px; color: var(--t2); line-height: 1.55; }
-
-    /* STEPS */
-    .steps-block { background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 32px; }
-    .steps-title { font-family: var(--fd); font-size: 11px; font-weight: 700; color: var(--t3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 24px; }
-    .steps { list-style: none; display: flex; flex-direction: column; gap: 18px; }
-    .step { display: flex; align-items: flex-start; gap: 14px; }
-    .step-num {
-      flex-shrink: 0; width: 28px; height: 28px; background: var(--gl);
-      border: 1px solid rgba(0,209,102,.3); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--fm); font-size: 12px; font-weight: 600; color: var(--g);
-    }
-    .step-body { font-size: 14px; color: var(--t1); line-height: 1.6; padding-top: 3px; }
-    .step-body code { font-family: var(--fm); font-size: 12px; background: var(--s3); padding: 1px 6px; border-radius: 4px; color: var(--g); }
-    .step-note { display: block; margin-top: 4px; font-size: 12px; color: var(--t3); }
-    .step-warn { display: block; margin-top: 6px; font-size: 12px; color: #F5C842; background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.2); border-radius: 6px; padding: 6px 10px; }
-    .step-warn a { color: #F5C842; }
-    .req-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--bd); }
-    .req-chip { background: var(--s2); border: 1px solid var(--bd); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--t2); display: flex; align-items: center; gap: 6px; }
-    .req-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); flex-shrink: 0; }
-
-    /* TEASER */
-    .teaser-section { background: var(--s0); border-top: 1px solid var(--bd); }
-    .teaser-inner { max-width: 760px; margin: 0 auto; padding: 64px 24px; display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
-    .teaser-badge { font-family: var(--fm); font-size: 10px; font-weight: 600; color: var(--t3); background: var(--s2); border: 1px solid var(--bd); padding: 3px 10px; border-radius: 99px; letter-spacing: .1em; text-transform: uppercase; display: inline-block; margin-bottom: 12px; }
-    .teaser-title { font-family: var(--fd); font-size: clamp(18px,3vw,26px); font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px; }
-    .teaser-title span { color: var(--g); }
-    .teaser-desc { font-size: 14px; color: var(--t2); line-height: 1.6; max-width: 420px; }
-    .teaser-icon { font-size: 64px; flex-shrink: 0; opacity: .35; filter: grayscale(1); margin-left: auto; }
-
-    /* FOOTER */
-    footer { border-top: 1px solid var(--bd); padding: 28px 24px; text-align: center; color: var(--t3); font-size: 12px; font-family: var(--fm); }
-    footer a { color: var(--t2); text-decoration: none; }
-    footer a:hover { color: var(--g); }
-
-    /* COMPAT CHIPS */
-    .compat-note {
-      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-      margin-top: 14px;
-    }
-    .compat-chip {
+    .hero-platform {
       font-family: var(--fm); font-size: 11px; font-weight: 500;
-      padding: 4px 10px; border-radius: 99px; border: 1px solid;
+      padding: 5px 12px; border-radius: 99px;
+      color: var(--g); border: 1px solid rgba(0,209,102,.3); background: rgba(0,209,102,.07);
     }
-    .compat-ok  { color: var(--g); border-color: rgba(0,209,102,.3); background: rgba(0,209,102,.07); }
-    .compat-no  { color: #FF4757; border-color: rgba(255,71,87,.3); background: rgba(255,71,87,.07); }
-
-    /* SCROLL HINT */
     .scroll-hint {
       display: flex; flex-direction: column; align-items: center; gap: 6px;
-      margin-top: 40px; color: var(--t3); font-size: 12px;
+      margin-top: 48px; color: var(--t3); font-size: 12px;
       font-family: var(--fm); letter-spacing: .08em;
       animation: fadeInHint 1.2s ease .8s both;
     }
@@ -176,7 +114,156 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── MODAL BASE ── */
+    .stats {
+      display: flex; border-top: 1px solid var(--bd); border-bottom: 1px solid var(--bd);
+      background: var(--s0); overflow-x: auto;
+    }
+    .stat { flex: 1; min-width: 120px; padding: 28px 16px; text-align: center; border-right: 1px solid var(--bd); }
+    .stat:last-child { border-right: none; }
+    .stat-val { font-family: var(--fm); font-size: 26px; font-weight: 600; color: var(--g); }
+    .stat-lbl { font-size: 12px; color: var(--t3); margin-top: 4px; }
+
+    .section { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
+    .section-title {
+      font-family: var(--fd); font-size: clamp(26px,3.5vw,36px); font-weight: 800;
+      letter-spacing: -.03em; margin-bottom: 10px;
+    }
+    .section-title span { color: var(--g); }
+    .section-sub {
+      color: var(--t2); font-size: 15px; margin-bottom: 40px; max-width: 600px; line-height: 1.6;
+    }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 14px; }
+    .feature-card {
+      background: var(--s1); border: 1px solid var(--bd); border-radius: 14px;
+      padding: 24px; transition: border-color .2s, background .2s;
+    }
+    .feature-card:hover { border-color: rgba(0,209,102,.3); background: var(--s0); }
+    .feature-icon { color: var(--g); margin-bottom: 14px; }
+    .feature-title { font-family: var(--fd); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .feature-desc { font-size: 13px; color: var(--t2); line-height: 1.6; }
+
+    .copa {
+      background: var(--s0); border-top: 1px solid var(--bd); border-bottom: 1px solid var(--bd);
+    }
+    .copa-inner { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
+    .copa-badge {
+      font-family: var(--fm); font-size: 10px; font-weight: 700; color: #000;
+      background: var(--g); padding: 3px 10px; border-radius: 99px;
+      letter-spacing: .1em; text-transform: uppercase; display: inline-block; margin-bottom: 16px;
+    }
+    .copa-title {
+      font-family: var(--fd); font-size: clamp(24px,3.5vw,34px); font-weight: 800;
+      letter-spacing: -.03em; margin-bottom: 12px;
+    }
+    .copa-title span { color: var(--g); }
+    .copa-desc { font-size: 15px; color: var(--t2); line-height: 1.65; margin-bottom: 28px; max-width: 600px; }
+    .copa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px; }
+    .copa-item {
+      background: var(--s1); border: 1px solid var(--bd); border-radius: 12px; padding: 20px;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .copa-item-icon { flex-shrink: 0; color: var(--g); }
+    .copa-item-text { font-size: 13px; color: var(--t1); font-weight: 500; line-height: 1.5; }
+    .copa-item-sub { font-size: 12px; color: var(--t3); margin-top: 4px; }
+
+    .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 16px; }
+    .dl-card {
+      background: var(--s1); border: 1px solid var(--bd); border-radius: 14px;
+      padding: 28px 24px; display: flex; flex-direction: column; transition: border-color .2s;
+    }
+    .dl-card:hover { border-color: rgba(0,209,102,.3); }
+    .dl-card-icon { color: var(--g); margin-bottom: 14px; }
+    .dl-card-title { font-family: var(--fd); font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .dl-card-desc { font-size: 13px; color: var(--t2); line-height: 1.55; margin-bottom: 20px; flex: 1; }
+    .dl-card-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--g); color: #000; font-family: var(--fd); font-weight: 700;
+      font-size: 13px; padding: 10px 18px; border-radius: 8px; align-self: flex-start;
+      transition: background .15s;
+    }
+    .dl-card-link:hover { background: var(--gd); }
+    .dl-card-link-outline {
+      background: transparent; border: 1px solid var(--bd); color: var(--t2);
+    }
+    .dl-card-link-outline:hover { border-color: var(--g); color: var(--t1); background: var(--s2); }
+    .dl-card-size {
+      font-family: var(--fm); font-size: 10px; color: var(--t3); margin-top: 8px;
+    }
+
+    .steps-block {
+      background: var(--s1); border: 1px solid var(--bd); border-radius: 14px; padding: 36px;
+    }
+    .steps-label {
+      font-family: var(--fm); font-size: 10px; font-weight: 700; color: var(--t3);
+      letter-spacing: .12em; text-transform: uppercase; margin-bottom: 24px;
+    }
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+    .step { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num {
+      flex-shrink: 0; width: 28px; height: 28px; background: var(--gl);
+      border: 1px solid rgba(0,209,102,.3); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fm); font-size: 12px; font-weight: 600; color: var(--g);
+    }
+    .step-body { font-size: 14px; color: var(--t1); line-height: 1.6; padding-top: 3px; }
+    .step-body code {
+      font-family: var(--fm); font-size: 12px; background: var(--s3);
+      padding: 1px 6px; border-radius: 4px; color: var(--g);
+    }
+    .step-note { display: block; margin-top: 4px; font-size: 12px; color: var(--t3); }
+    .req-chips {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; padding-top: 24px;
+      border-top: 1px solid var(--bd);
+    }
+    .req-chip {
+      background: var(--s2); border: 1px solid var(--bd); border-radius: 8px;
+      padding: 7px 12px; font-size: 12px; color: var(--t2);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .req-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--g); flex-shrink: 0; }
+
+    .updates-list { display: flex; flex-direction: column; gap: 16px; }
+    .update-card {
+      background: var(--s0); border: 1px solid var(--bd); border-radius: 12px;
+      overflow: hidden; border-left: 4px solid var(--g);
+    }
+    .update-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; border-bottom: 1px solid var(--bd);
+    }
+    .update-tag {
+      font-family: var(--fm); font-size: 11px; font-weight: 700;
+      background: var(--gl); color: var(--g); padding: 3px 9px; border-radius: 99px;
+    }
+    .update-date {
+      font-family: var(--fm); font-size: 11px; color: var(--t3);
+    }
+    .update-label {
+      margin-left: auto; font-size: 11px; color: var(--t2); font-weight: 600;
+    }
+    .update-items { list-style: none; padding: 14px 20px; display: flex; flex-direction: column; gap: 9px; }
+    .update-item {
+      display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--t2);
+    }
+    .update-item strong { color: var(--t1); }
+    .update-bullet {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--g);
+      margin-top: 6px; flex-shrink: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--bd); padding: 32px 24px;
+      text-align: center; color: var(--t3); font-size: 12px; font-family: var(--fm);
+    }
+    footer a { color: var(--t2); }
+    footer a:hover { color: var(--g); }
+    .footer-balaio {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 10px; font-size: 11px; color: var(--t3); transition: color .15s;
+    }
+    .footer-balaio:hover { color: var(--t2); }
+
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 500;
       background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
@@ -204,7 +291,6 @@
     .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--bd); }
 
-    /* DOWNLOAD MODAL */
     .checklist { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
     .check-item {
       display: flex; align-items: flex-start; gap: 12px;
@@ -261,7 +347,6 @@
     .btn-do-download:not(:disabled):hover { background: var(--gd); }
     .dl-hint { font-size: 12px; color: var(--t3); text-align: center; margin-top: 10px; font-family: var(--fm); }
 
-    /* FEEDBACK MODAL */
     .feedback-textarea {
       width: 100%; min-height: 110px; background: var(--s2); border: 1px solid var(--bd);
       border-radius: 8px; padding: 12px 14px; color: var(--t1);
@@ -288,27 +373,28 @@
     .feedback-success {
       display: none; text-align: center; padding: 20px 0;
     }
-    .feedback-success-icon { font-size: 40px; margin-bottom: 10px; }
+    .feedback-success-icon {
+      width: 48px; height: 48px; margin: 0 auto 12px; color: var(--g);
+    }
     .feedback-success-title { font-family: var(--fd); font-size: 18px; font-weight: 800; margin-bottom: 6px; color: var(--g); }
     .feedback-success-sub { font-size: 13px; color: var(--t2); }
 
     @media (max-width: 600px) {
       nav { padding: 0 16px; }
-      .teaser-icon { display: none; }
       .stats { flex-wrap: wrap; }
       .stat { min-width: 50%; border-right: none; border-bottom: 1px solid var(--bd); }
       .stat:nth-child(odd) { border-right: 1px solid var(--bd); }
       .stat:last-child { border-bottom: none; }
       .radio-group { flex-direction: column; }
+      .update-label { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAV ── -->
   <nav>
     <div class="nav-logo">
-      <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none" style="flex-shrink:0">
         <rect width="100" height="100" rx="18" fill="#060A0F"/>
         <circle cx="50" cy="50" r="38" stroke="#00D166" stroke-width="2.5"/>
         <circle cx="50" cy="50" r="44" stroke="#00D166" stroke-width="5" opacity="0.07"/>
@@ -321,12 +407,8 @@
       </svg>
       Brasil<span>Fut</span> <span class="badge-beta">BETA</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <a href="#updates" style="font-size:13px;color:var(--t3);text-decoration:none;padding:6px 12px;border-radius:8px;border:1px solid transparent;transition:all .15s;font-weight:500" id="nav-updates-link"
-        onmouseover="this.style.color='var(--t1)';this.style.borderColor='var(--bd)'"
-        onmouseout="this.style.color='var(--t3)';this.style.borderColor='transparent'">
-        Novidades
-      </a>
+    <div class="nav-right">
+      <a href="#updates" class="nav-link">Novidades</a>
       <button class="btn-feedback" onclick="openFeedback()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -336,44 +418,28 @@
     </div>
   </nav>
 
-  <!-- ── HERO ── -->
   <section class="hero">
-    <p class="hero-eyebrow">Gerenciador de Futebol · Versão Beta</p>
+    <p class="hero-eyebrow">Gerenciador de Futebol Offline</p>
     <h1>Monte.<br><span>Escale.</span><br>Conquiste.</h1>
     <p class="hero-sub">
-      Escolha seu clube, monte o elenco, defina a tática e dispute campeonatos temporada a temporada — sem internet, sem cadastro, sem custo.
+      Escolha seu clube, monte o elenco, defina a tatica e dispute campeonatos temporada a temporada — sem internet, sem cadastro, sem custo.
     </p>
-    <button class="btn-download" onclick="openDownload()">
+    <button class="btn-primary" onclick="openDownload()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
         <line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
-      Baixar Brasil Fut
+      Jogar Brasil Fut
     </button>
-    <div class="btn-meta">
-      <span>📦 BrasilFut.zip — ~24 MB</span>
-      <span>🖥 Apenas desktop</span>
-      <span>🔒 Gratuito</span>
+    <div class="hero-platforms">
+      <span class="hero-platform">Windows</span>
+      <span class="hero-platform">Android</span>
+      <span class="hero-platform">Navegador</span>
+      <span class="hero-platform">Gratuito</span>
     </div>
-    <div class="compat-note">
-      <span class="compat-chip compat-ok">🪟 Windows</span>
-      <span class="compat-chip compat-ok">🍎 Mac</span>
-      <span class="compat-chip compat-ok">📱 Android (PWA)</span>
-    </div>
-
-    <!-- Mobile Download Banner -->
-    <div style="margin-top: 24px; background: var(--gl); border: 1px solid var(--g); padding: 12px 24px; border-radius: 99px; display: flex; align-items: center; gap: 12px;">
-      <span style="font-size: 20px;">📱</span>
-      <div style="text-align: left;">
-        <div style="font-weight: 800; font-size: 14px; color: var(--g);">Versão Android Disponível</div>
-        <div style="font-size: 11px; color: var(--t2);">Acesse pelo celular e adicione à tela inicial</div>
-      </div>
-      <a href="https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.6/BrasilFut-Android.apk" style="margin-left: auto; background: var(--g); color: #000; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 12px; text-decoration: none;">BAIXAR APK</a>
-    </div>
-
     <div class="scroll-hint">
-      <span>Veja as instruções enquanto baixa</span>
+      <span>Conheca o jogo</span>
       <div class="scroll-arrow">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"/>
@@ -382,315 +448,249 @@
     </div>
   </section>
 
-  <!-- STATS -->
   <div class="stats">
     <div class="stat"><div class="stat-val">8.300+</div><div class="stat-lbl">Escudos de clubes</div></div>
-    <div class="stat"><div class="stat-val">86</div><div class="stat-lbl">Seleções nacionais</div></div>
-    <div class="stat"><div class="stat-val">100%</div><div class="stat-lbl">Offline</div></div>
-    <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Instalação necessária</div></div>
+    <div class="stat"><div class="stat-val">86</div><div class="stat-lbl">Selecoes nacionais</div></div>
+    <div class="stat"><div class="stat-val">1.000+</div><div class="stat-lbl">Times com elencos reais</div></div>
+    <div class="stat"><div class="stat-val">100%</div><div class="stat-lbl">Offline e gratuito</div></div>
   </div>
 
-  <!-- O QUE TEM -->
-  <section class="section">
-    <h2 class="section-title">O que você vai <span>encontrar</span></h2>
-    <p class="section-sub">Tudo que um gerenciador de futebol precisa, sem conexão com internet.</p>
+  <section class="section" id="features">
+    <h2 class="section-title">Tudo que um gerenciador precisa <span>e mais</span></h2>
+    <p class="section-sub">Jogue sem depender de internet. Seu save fica no seu computador ou celular.</p>
     <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">🏟</div><div class="feature-title">Gerencie seu Clube</div><div class="feature-desc">Escolha um clube de qualquer liga do mundo e comande cada temporada.</div></div>
-      <div class="feature-card"><div class="feature-icon">👥</div><div class="feature-title">Monte o Elenco</div><div class="feature-desc">Contrate, negocie e forme o time que você quer dirigir.</div></div>
-      <div class="feature-card"><div class="feature-icon">🗂</div><div class="feature-title">Escalação Tática</div><div class="feature-desc">Posicione jogadores no campo com drag-and-drop e defina esquemas.</div></div>
-      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Simule Partidas</div><div class="feature-desc">Dispute campeonatos temporada a temporada e acompanhe os resultados.</div></div>
-      <div class="feature-card"><div class="feature-icon">💾</div><div class="feature-title">Save Local</div><div class="feature-desc">Progresso salvo no seu PC — só seu, ninguém mais acessa.</div></div>
-      <div class="feature-card"><div class="feature-icon">🌍</div><div class="feature-title">Mundo Inteiro</div><div class="feature-desc">86 seleções com camisas reais e 8.300+ escudos de clubes globais.</div></div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-3z"/></svg>
+        </div>
+        <div class="feature-title">Gerencie seu Clube</div>
+        <div class="feature-desc">Escolha um clube de qualquer liga do mundo e comande cada temporada.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="feature-title">Monte o Elenco</div>
+        <div class="feature-desc">Contrate, negocie e forme o time com jogadores reais da base Brasfoot.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="feature-title">Escalacao Tatica</div>
+        <div class="feature-desc">Posicione jogadores no campo com drag-and-drop e defina esquemas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" opacity="0.15"/></svg>
+        </div>
+        <div class="feature-title">Simule Partidas</div>
+        <div class="feature-desc">Dispute campeonatos com engine tatica que impacta resultados e cansaço.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </div>
+        <div class="feature-title">Save Local</div>
+        <div class="feature-desc">Progresso salvo automaticamente — so seu, ninguem mais acessa.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="feature-title">Mundo Inteiro</div>
+        <div class="feature-desc">86 selecoes com camisas reais e 8.300+ escudos de clubes globais.</div>
+      </div>
     </div>
+  </section>
 
-    <!-- COMO JOGAR -->
-    <h2 class="section-title" style="margin-bottom:8px;">Como <span>começar</span></h2>
-    <p class="section-sub">Quatro passos e você já está no campo.</p>
+  <section class="copa">
+    <div class="copa-inner">
+      <span class="copa-badge">Novo</span>
+      <h2 class="copa-title">Modo <span>Copa do Mundo 2026</span></h2>
+      <p class="copa-desc">
+        O modo Copa do Mundo e uma experiencia separada e completa. Escolha sua selecao, passe pela fase de grupos e avance no mata-mata ate levantar a taca. Estatisticas, artilharia e historico de campeoes inclusos.
+      </p>
+      <div class="copa-grid">
+        <div class="copa-item">
+          <div class="copa-item-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"/><path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><path d="M6 3h12v6a6 6 0 0 1-12 0V3z"/></svg>
+          </div>
+          <div>
+            <div class="copa-item-text">32 selecoes reais</div>
+            <div class="copa-item-sub">Com camisas autenticas e elencos Brasfoot</div>
+          </div>
+        </div>
+        <div class="copa-item">
+          <div class="copa-item-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div>
+            <div class="copa-item-text">Fase de grupos + mata-mata</div>
+            <div class="copa-item-sub">Oitavas, quartas, semi e final — o caminho completo</div>
+          </div>
+        </div>
+        <div class="copa-item">
+          <div class="copa-item-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div>
+            <div class="copa-item-text">Estatisticas completas</div>
+            <div class="copa-item-sub">Artilharia, assistencias, melhores jogadores</div>
+          </div>
+        </div>
+        <div class="copa-item">
+          <div class="copa-item-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="copa-item-text">Modo separado do save principal</div>
+            <div class="copa-item-sub">Jogue a Copa sem interferir no seu campeonato</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="download">
+    <h2 class="section-title">Baixe e jogue <span>agora</span></h2>
+    <p class="section-sub">Escolha sua plataforma preferida. O jogo e 100% gratuito, sem cadastro e sem propagandas.</p>
+    <div class="dl-grid">
+      <div class="dl-card">
+        <div class="dl-card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg>
+        </div>
+        <div class="dl-card-title">Windows</div>
+        <div class="dl-card-desc">Aplicativo Electron completo. Baixe o ZIP, extraia em uma pasta fixa e execute o JOGAR.bat.</div>
+        <a href="https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.6/BrasilFut.zip" class="dl-card-link" target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar ZIP
+        </a>
+        <span class="dl-card-size">~24 MB</span>
+      </div>
+      <div class="dl-card">
+        <div class="dl-card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <div class="dl-card-title">Android</div>
+        <div class="dl-card-desc">Versao Android nativa. Baixe o APK, instale e jogue em qualquer lugar.</div>
+        <a href="https://github.com/bloodyu2/brasil-fut-app/releases/download/v1.6/BrasilFut-Android.apk" class="dl-card-link" target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar APK
+        </a>
+        <span class="dl-card-size">~24 MB</span>
+      </div>
+      <div class="dl-card">
+        <div class="dl-card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="dl-card-title">Navegador</div>
+        <div class="dl-card-desc">Jogue direto no browser, sem baixar nada. Funciona no Chrome, Edge, Firefox e Safari.</div>
+        <a href="brasil-fut.html" class="dl-card-link dl-card-link-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" opacity="0.3"/></svg>
+          Jogar agora
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="howto">
+    <h2 class="section-title">Como <span>comecar</span></h2>
+    <p class="section-sub">Em quatro passos voce ja esta dentro de campo.</p>
     <div class="steps-block">
-      <p class="steps-title">Instalação e primeiros passos</p>
+      <p class="steps-label">Primeiros passos</p>
       <ul class="steps">
         <li class="step">
           <span class="step-num">1</span>
           <span class="step-body">
-            Clique no botão <strong>Baixar Brasil Fut</strong> acima e salve o arquivo <code>BrasilFut.zip</code>.
-            <span class="step-note">O download começa automaticamente — sem cadastro, sem conta.</span>
+            Clique em <strong>Jogar Brasil Fut</strong> no topo da pagina e baixe o arquivo da sua plataforma.
+            <span class="step-note">Sem cadastro, sem conta — o download comeca na hora.</span>
           </span>
         </li>
         <li class="step">
           <span class="step-num">2</span>
           <span class="step-body">
-            Clique com o botão direito no arquivo → <strong>Extrair tudo</strong> → escolha uma pasta fixa.
-            <span class="step-note">Recomendamos <code>C:\BrasilFut\</code> — não mova a pasta depois de começar a jogar.</span>
+            Se escolheu Windows: extraia o ZIP em uma pasta fixa (ex: <code>C:\BrasilFut\</code>) e execute <code>JOGAR.bat</code>.
+            <span class="step-note">Android: instale o APK. Navegador: abra o link direto.</span>
           </span>
         </li>
         <li class="step">
           <span class="step-num">3</span>
           <span class="step-body">
-            Dentro da pasta extraída, execute <code>JOGAR.bat</code> para iniciar o jogo.
-            <span class="step-note">Prefere sem janela de terminal? Use <code>BrasilFut.vbs</code> — mesmo resultado, modo silencioso.</span>
-            <span class="step-warn">
-              ⚠️ Se o <code>JOGAR.bat</code> abrir e fechar sem nada acontecer, pode ser que o Python não esteja instalado.
-              Baixe em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> (versão 3.6+) e tente novamente.
-              <br><br>
-              Alternativa (Windows e Mac): abra a pasta e dê duplo clique direto no arquivo <code>brasil-fut.html</code> — ele abre no seu navegador e funciona da mesma forma.
-              <br><br>
-              🍎 <strong>Mac:</strong> os arquivos <code>.bat</code> e <code>.vbs</code> são exclusivos para Windows. No Mac, abra sempre o <code>brasil-fut.html</code> direto no navegador (Chrome, Safari ou Firefox).
-              <br><br>
-              📵 <strong>Mobile não é suportado</strong> — o jogo foi desenvolvido para desktop e não funciona em celular ou tablet.
-            </span>
+            Se o <code>JOGAR.bat</code> fechar sem nada, instale Python 3.6+ em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer" style="color:var(--g)">python.org</a> ou abra direto o <code>brasil-fut.html</code> no navegador — funciona igual.
           </span>
         </li>
         <li class="step">
           <span class="step-num">4</span>
           <span class="step-body">
-            Na tela inicial, clique em <strong>Novo Jogo</strong>, escolha seu clube e comece a gerenciar!
-            <span class="step-note">Seu progresso é salvo automaticamente no navegador — enquanto usar o mesmo navegador e a mesma pasta, o save persiste.</span>
+            Na tela inicial, clique em <strong>Novo Jogo</strong>, escolha seu clube e comande.
+            <span class="step-note">Progresso salvo automaticamente — enquanto usar o mesmo navegador, o save persiste.</span>
           </span>
         </li>
       </ul>
       <div class="req-chips">
-        <div class="req-chip"><span class="dot"></span>Windows 10+ ou Mac</div>
+        <div class="req-chip"><span class="dot"></span>Windows 10+</div>
+        <div class="req-chip"><span class="dot"></span>Android 8+</div>
         <div class="req-chip"><span class="dot"></span>Edge, Chrome, Firefox ou Safari</div>
-        <div class="req-chip"><span class="dot"></span>Python 3.6+ (opcional — python.org)</div>
-        <div class="req-chip"><span class="dot"></span>~45 MB de espaço livre</div>
-        <div class="req-chip" style="border-color:rgba(255,71,87,.3);color:#FF4757;background:rgba(255,71,87,.05)">
-          <span class="dot" style="background:#FF4757"></span>Sem suporte mobile
-        </div>
+        <div class="req-chip"><span class="dot"></span>Python 3.6+ (opcional)</div>
+        <div class="req-chip"><span class="dot"></span>~45 MB de espaco livre</div>
       </div>
     </div>
   </section>
 
-  <!-- UPDATES / NOVIDADES -->
   <section class="section" id="updates">
-    <h2 class="section-title">Novidades &amp; <span>Atualizações</span></h2>
-    <p class="section-sub">O jogo é atualizado com frequência. Veja o que mudou em cada versão.</p>
+    <h2 class="section-title">Novidades &amp; <span>Atualizacoes</span></h2>
+    <p class="section-sub">O jogo e atualizado com frequencia. Veja o que mudou nas ultimas versoes.</p>
+    <div class="updates-list">
 
-    <div style="display:flex;flex-direction:column;gap:16px;max-width:680px;margin:0 auto">
-
-
-      <!-- v2.0 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden;border-left:4px solid var(--g)">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v2.0</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">Maio 2024</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Completa & UI Premium</span>
+      <div class="update-card">
+        <div class="update-head">
+          <span class="update-tag">v2.0</span>
+          <span class="update-date">Maio 2024</span>
+          <span class="update-label">Engine Completa &amp; UI Premium</span>
         </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🚀</span>
-            <span><strong style="color:var(--t1)">Nova Engine de Jogo</strong> — Táticas (Ataque, Marcação, Pressão) agora têm impacto real e matemático nos resultados e no cansaço.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💎</span>
-            <span><strong style="color:var(--t1)">Visual Modernizado</strong> — Layout totalmente reestruturado, mais espaçoso e com estética premium. Fim do aspecto "achatado".</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📊</span>
-            <span><strong style="color:var(--t1)">Rosters 2024 Corrigidos</strong> — Elencos atualizados via Transfermarkt com suporte a posições reais (GOL, ZAG, LAT, VOL, MEI, ALA, ATA).</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💾</span>
-            <span><strong style="color:var(--t1)">Save Estabilizado</strong> — Migração para IndexedDB para garantir que nenhum progresso seja perdido.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📱</span>
-            <span><strong style="color:var(--t1)">Suporte Mobile (PWA)</strong> — Agora é possível instalar o Brasil Fut no Android através do navegador e jogar em tela cheia.</span>
-          </li>
+        <ul class="update-items">
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Nova Engine de Jogo</strong> — Tacticas (Ataque, Marcacao, Pressao) com impacto real e matematico nos resultados.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Visual Modernizado</strong> — Layout reestruturado, espacoso e com estetica premium.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Rosters 2024 Corrigidos</strong> — Elencos atualizados via Transfermarkt com posicoes reais.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Save Estabilizado</strong> — Migracao para IndexedDB.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Suporte Android</strong> — Versao movel via APK.</span></li>
         </ul>
       </div>
 
-      <!-- v1.6 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.6</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">13/04/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Elencos Brasfoot · Todos os times</span>
+      <div class="update-card">
+        <div class="update-head">
+          <span class="update-tag">v1.6</span>
+          <span class="update-date">13/04/2026</span>
+          <span class="update-label">Elencos Brasfoot — Todos os times</span>
         </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🌍</span>
-            <span><strong style="color:var(--t1)">Elencos reais em todas as ligas</strong> — Série A, B, C, D, estaduais e Sul-Americanos agora usam os jogadores reais do Brasfoot 22/23, não mais geração aleatória.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">⚽</span>
-            <span><strong style="color:var(--t1)">+190 times de ligas corrigidos</strong> — Flamengo, River Plate, Boca Juniors, Nacional, Colo-Colo e demais times de ligas agora têm nomes, OVR, idades e posições exatos do Brasfoot.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔢</span>
-            <span><strong style="color:var(--t1)">Cobertura total</strong> — combinado com os 854 times do modo mundial (v1.5), mais de 1.000 times agora têm elencos 100% baseados na base real do Brasfoot.</span>
-          </li>
+        <ul class="update-items">
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Elencos reais em todas as ligas</strong> — Series A, B, C, D, estaduais e Sul-Americanos com jogadores reais do Brasfoot 22/23.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>+190 times de ligas corrigidos</strong> — Flamengo, River Plate, Boca Juniors, Nacional, Colo-Colo e mais.</span></li>
+          <li class="update-item"><span class="update-bullet"></span><span><strong>Cobertura total</strong> — Mais de 1.000 times com elencos 100% Brasfoot.</span></li>
         </ul>
       </div>
 
-      <!-- v1.5 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.5</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">13/04/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Elencos Brasfoot · 854 times</span>
+      <div class="update-card" style="border-left-color:#2D8CFF">
+        <div class="update-head">
+          <span class="update-tag" style="background:rgba(45,140,255,.12);color:#2D8CFF">v1.5</span>
+          <span class="update-date">13/04/2026</span>
+          <span class="update-label">Elencos Brasfoot — 854 times</span>
         </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">⚽</span>
-            <span><strong style="color:var(--t1)">Elencos 100% Brasfoot</strong> — 854 times do jogo agora têm os jogadores reais da base Brasfoot 22/23: nomes corretos, OVR, idade e posição exatos.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🥅</span>
-            <span><strong style="color:var(--t1)">Goleiros na posição certa</strong> — goleiros reserva agora preenchem exclusivamente as vagas de goleiro; sem mais lateral escalado no gol.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔢</span>
-            <span><strong style="color:var(--t1)">OVR preciso</strong> — critério de desempate por OVR bruto garante que o melhor jogador da posição seja sempre o titular.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- v1.4 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.4</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">03/04/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Crash Fixes · UX</span>
-        </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🏆</span>
-            <span><strong style="color:var(--t1)">Pré-jogo de Copa/Estadual corrigido</strong> — crash ao abrir a tela de escalação antes de partidas de Copa ou Estadual foi eliminado. Campo e formação agora aparecem corretamente.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📊</span>
-            <span><strong style="color:var(--t1)">Dashboard mais estável</strong> — crash raro ao carregar o próximo adversário (time de Copa fora da lista da liga) foi corrigido com proteção de null.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔴</span>
-            <span><strong style="color:var(--t1)">Zona de rebaixamento destacada</strong> — times na zona de rebaixamento na tabela de classificação agora aparecem com fundo vermelho correto.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🏟</span>
-            <span><strong style="color:var(--t1)">Perfil do clube acessível</strong> — aba "Perfil" adicionada ao menu do Clube: histórico de troféus, aproveitamento e estatísticas do técnico.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- v1.3 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.3</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">03/04/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix · Save Fix</span>
-        </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💾</span>
-            <span><strong style="color:var(--t1)">Botão Continuar corrigido</strong> — o auto-save agora é gravado de forma compatível com o botão Continuar da tela inicial. Saves não são mais perdidos.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🌱</span>
-            <span><strong style="color:var(--t1)">Peneira corrigida</strong> — jovens eram gerados 3-4× por temporada. Agora acontece exatamente 1× na virada de temporada.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📭</span>
-            <span><strong style="color:var(--t1)">Ofertas fantasma eliminadas</strong> — propostas de jogadores já vendidos ou liberados não acumulam mais na aba de ofertas entre temporadas.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🔄</span>
-            <span><strong style="color:var(--t1)">Modal de download/feedback</strong> — estado é resetado corretamente ao reabrir. Erro de envio de feedback agora é exibido ao usuário.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- v1.2 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:var(--gl);color:var(--g);padding:3px 9px;border-radius:99px">v1.2</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">02/04/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Engine Fix + UX</span>
-        </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">⬆</span>
-            <span><strong style="color:var(--t1)">Promoção e rebaixamento reais</strong> — ao final de cada temporada o jogo agora reconstrói a liga na divisão correta. Subiu? Enfrenta times mais fortes. Caiu? Disputa a divisão inferior.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🪟</span>
-            <span><strong style="color:var(--t1)">Modal pós-partida</strong> — resultado, gols e eventos agora aparecem em janela centralizada em vez de faixa no canto. Feche quando quiser.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">💸</span>
-            <span><strong style="color:var(--t1)">Valor de mercado recalibrado</strong> — fórmula quadrática do Brasfoot original. Valores mais realistas para o futebol brasileiro (OVR 70 ≈ R$14M).</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">📭</span>
-            <span><strong style="color:var(--t1)">Aba de Ofertas Recebidas corrigida</strong> — exibe corretamente as propostas de outros clubes pelos seus jogadores.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:var(--g);margin-top:1px;flex-shrink:0">🛡</span>
-            <span><strong style="color:var(--t1)">Logos das equipes</strong> — fallback via data URI SVG, sem flickering em listas longas.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- v1.1 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(45,140,255,.12);color:#2D8CFF;padding:3px 9px;border-radius:99px">v1.1</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">30/03/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:600">Site · UX</span>
-        </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">🔒</span>
-            <span><strong style="color:var(--t1)">Modal de download com checklist</strong> — leia as instruções antes de baixar. Rastreio de indicação para entender quem está convidando quem.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">💬</span>
-            <span><strong style="color:var(--t1)">Botão de Feedback</strong> — envie sugestões e bugs diretamente pelo site.</span>
-          </li>
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)">
-            <span style="color:#2D8CFF;margin-top:1px;flex-shrink:0">🍎</span>
-            <span><strong style="color:var(--t1)">Info de compatibilidade</strong> — Windows, Mac (navegador) e aviso de sem suporte mobile.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- v1.0 -->
-      <div style="background:var(--s0);border:1px solid var(--bd);border-radius:12px;overflow:hidden;opacity:.7">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd)">
-          <span style="font-family:var(--fm);font-size:11px;font-weight:700;background:rgba(83,96,112,.2);color:var(--t3);padding:3px 9px;border-radius:99px">v1.0</span>
-          <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">28/03/2026</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--t3);font-weight:600">Lançamento Beta</span>
-        </div>
-        <ul style="list-style:none;padding:14px 20px;display:flex;flex-direction:column;gap:9px">
-          <li style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t3)">
-            <span style="margin-top:1px;flex-shrink:0">🚀</span>
-            <span>Lançamento inicial para beta testers. Jogo completo offline, 8.300+ escudos, 86 seleções, sistema de campeonatos e temporadas.</span>
-          </li>
+        <ul class="update-items">
+          <li class="update-item"><span class="update-bullet" style="background:#2D8CFF"></span><span><strong>Elencos 100% Brasfoot</strong> — 854 times com jogadores reais: nomes, OVR, idade e posicao exatos.</span></li>
+          <li class="update-item"><span class="update-bullet" style="background:#2D8CFF"></span><span><strong>Goleiros na posicao certa</strong> — Sem mais lateral escalado no gol.</span></li>
+          <li class="update-item"><span class="update-bullet" style="background:#2D8CFF"></span><span><strong>OVR preciso</strong> — Criterio de desempate por OVR bruto para titularidade.</span></li>
         </ul>
       </div>
 
     </div>
   </section>
 
-  <!-- TEASER -->
-  <div class="teaser-section">
-    <div class="teaser-inner">
-      <div>
-        <span class="teaser-badge">Em breve</span>
-        <h3 class="teaser-title">Versão <span>online</span> a caminho</h3>
-        <p class="teaser-desc">Uma versão que roda direto no navegador, sem precisar baixar nada. Em desenvolvimento.</p>
-      </div>
-      <div class="teaser-icon">🌐</div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
   <footer>
-    <p>Brasil Fut · Beta</p>
-    <a href="https://balaio.net" target="_blank" rel="noopener noreferrer"
-       style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--t3);text-decoration:none;transition:color .15s;"
-       onmouseover="this.style.color='var(--t2)'" onmouseout="this.style.color='var(--t3)'"
-       aria-label="Site desenvolvido pela Balaio Digital">
-      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <p>Brasil Fut &middot; Beta</p>
+    <a href="https://balaio.net" target="_blank" rel="noopener noreferrer" class="footer-balaio" aria-label="Site desenvolvido pela Balaio Digital">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
         <ellipse cx="10" cy="5.5" rx="9" ry="3.5" stroke="currentColor" stroke-width="1.4" fill="none"/>
         <path d="M1 5.5 L1 15 C1 17.5 5.5 19.5 10 19.5 C14.5 19.5 19 17.5 19 15 L19 5.5" stroke="currentColor" stroke-width="1.4" fill="none"/>
         <path d="M1.5 11.5 C4 13 7 13.8 10 13.8 C13 13.8 16 13 18.5 11.5" stroke="#ef4444" stroke-width="1.8" fill="none" stroke-linecap="round"/>
@@ -699,54 +699,46 @@
     </a>
   </footer>
 
-  <!-- ══════════════════════════════════════
-       MODAL — DOWNLOAD GATE
-  ══════════════════════════════════════ -->
   <div class="modal-overlay" id="modalDownload" onclick="handleOverlayClick(event,'modalDownload')">
     <div class="modal">
       <div class="modal-header">
         <div>
           <div class="modal-title">Antes de baixar...</div>
-          <div class="modal-sub">Confirme que leu as instruções para jogar sem problemas.</div>
+          <div class="modal-sub">Confirme que leu as instrucoes para jogar sem problemas.</div>
         </div>
-        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalDownload')" aria-label="Fechar">✕</button>
+        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalDownload')" aria-label="Fechar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div class="modal-body">
-
-        <!-- CHECKLIST -->
         <div class="checklist" id="checklist">
           <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
-            <span class="check-box"><span class="check-tick">✓</span></span>
-            <span class="check-label">Vou extrair o ZIP em uma pasta fixa — ex: <code>C:\BrasilFut\</code> — e não vou movê-la depois.</span>
+            <span class="check-box"><span class="check-tick">&#10003;</span></span>
+            <span class="check-label">Vou extrair o ZIP em uma pasta fixa — ex: <code>C:\BrasilFut\</code> — e nao vou move-la depois.</span>
           </div>
           <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
-            <span class="check-box"><span class="check-tick">✓</span></span>
+            <span class="check-box"><span class="check-tick">&#10003;</span></span>
             <span class="check-label">Para jogar, vou abrir <code>JOGAR.bat</code> ou <code>BrasilFut.vbs</code> dentro da pasta.</span>
           </div>
           <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
-            <span class="check-box"><span class="check-tick">✓</span></span>
-            <span class="check-label">Se o <code>JOGAR.bat</code> não funcionar, posso abrir direto o <code>brasil-fut.html</code> no navegador — funciona igual. Se quiser o launcher completo, baixo o Python em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener" onclick="event.stopPropagation()">python.org</a>.</span>
+            <span class="check-box"><span class="check-tick">&#10003;</span></span>
+            <span class="check-label">Se o <code>JOGAR.bat</code> nao funcionar, posso abrir direto o <code>brasil-fut.html</code> no navegador — funciona igual. Se quiser o launcher completo, baixo o Python em <a href="https://www.python.org/downloads/" target="_blank" rel="noopener" onclick="event.stopPropagation()">python.org</a>.</span>
           </div>
           <div class="check-item" role="button" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this)">
-            <span class="check-box"><span class="check-tick">✓</span></span>
-            <span class="check-label">Meu progresso é salvo automaticamente no navegador — enquanto eu usar o mesmo navegador e a mesma pasta, tudo fica guardado.</span>
+            <span class="check-box"><span class="check-tick">&#10003;</span></span>
+            <span class="check-label">Meu progresso e salvo automaticamente no navegador — enquanto eu usar o mesmo navegador e a mesma pasta, tudo fica guardado.</span>
           </div>
         </div>
-
-        <!-- INDICAÇÃO -->
         <div class="referral-section" id="referralSection">
-          <div class="referral-label">Você foi indicado por alguém para jogar?</div>
+          <div class="referral-label">Voce foi indicado por alguem para jogar?</div>
           <div class="radio-group">
             <div class="radio-btn" id="radioSim" onclick="selectReferral(true)">Sim, fui indicado</div>
-            <div class="radio-btn" id="radioNao" onclick="selectReferral(false)">Não, achei por conta</div>
+            <div class="radio-btn" id="radioNao" onclick="selectReferral(false)">Nao, achei por conta</div>
           </div>
           <div class="referral-input-wrap" id="referralInputWrap">
-            <input class="referral-input" id="referralName" type="text"
-              placeholder="Nome de quem te indicou..." maxlength="80"
-              oninput="updateDownloadBtn()">
+            <input class="referral-input" id="referralName" type="text" placeholder="Nome de quem te indicou..." maxlength="80" oninput="updateDownloadBtn()">
           </div>
         </div>
-
       </div>
       <div class="modal-footer">
         <button class="btn-do-download" id="btnDoDownload" disabled onclick="doDownload()">
@@ -762,32 +754,27 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       MODAL — FEEDBACK
-  ══════════════════════════════════════ -->
   <div class="modal-overlay" id="modalFeedback" onclick="handleOverlayClick(event,'modalFeedback')">
     <div class="modal">
       <div class="modal-header">
         <div>
           <div class="modal-title">Deixe seu feedback</div>
-          <div class="modal-sub">O que achou do jogo? Bugs, sugestões, elogios — tudo é bem-vindo.</div>
+          <div class="modal-sub">O que achou do jogo? Bugs, sugestoes, elogios — tudo e bem-vindo.</div>
         </div>
-        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalFeedback')" aria-label="Fechar">✕</button>
+        <button class="modal-close" onclick="event.stopPropagation(); closeModal('modalFeedback')" aria-label="Fechar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div class="modal-body" id="feedbackBody">
-        <textarea class="feedback-textarea" id="feedbackMsg"
-          placeholder="Escreva aqui seu feedback... O que você achou? Algum bug? Sugestão de melhoria?"
-          oninput="updateFeedbackBtn()"></textarea>
-        <input class="feedback-name" id="feedbackName" type="text"
-          placeholder="Seu nome (opcional)" maxlength="60">
-        <button class="btn-send-feedback" id="btnSendFeedback" disabled onclick="sendFeedback()">
-          Enviar feedback
-        </button>
-
+        <textarea class="feedback-textarea" id="feedbackMsg" placeholder="Escreva aqui seu feedback... O que voce achou? Algum bug? Sugestao de melhoria?" oninput="updateFeedbackBtn()"></textarea>
+        <input class="feedback-name" id="feedbackName" type="text" placeholder="Seu nome (opcional)" maxlength="60">
+        <button class="btn-send-feedback" id="btnSendFeedback" disabled onclick="sendFeedback()">Enviar feedback</button>
         <div class="feedback-success" id="feedbackSuccess">
-          <div class="feedback-success-icon">🙌</div>
+          <div class="feedback-success-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
           <div class="feedback-success-title">Obrigado!</div>
-          <div class="feedback-success-sub">Seu feedback foi enviado. A gente lê tudo.</div>
+          <div class="feedback-success-sub">Seu feedback foi enviado. A gente le tudo.</div>
         </div>
       </div>
     </div>
@@ -801,9 +788,7 @@
 
     let wasReferred = null;
 
-    /* ── Modals ── */
     function openDownload() {
-      // Reset checklist state on every open
       document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
       document.getElementById('referralSection').classList.remove('visible');
       document.getElementById('referralInputWrap').classList.remove('visible');
@@ -817,7 +802,6 @@
       document.body.style.overflow = 'hidden';
     }
     function openFeedback() {
-      // Reset feedback state on every open
       document.getElementById('feedbackMsg').value = '';
       document.getElementById('feedbackName').value = '';
       document.getElementById('btnSendFeedback').disabled = true;
@@ -847,7 +831,6 @@
       }
     });
 
-    /* ── Checklist ── */
     function toggleCheck(el) {
       el.classList.toggle('checked');
       const allChecked = [...document.querySelectorAll('.check-item')].every(i => i.classList.contains('checked'));
@@ -855,7 +838,6 @@
       updateDownloadBtn();
     }
 
-    /* ── Referral ── */
     function selectReferral(val) {
       wasReferred = val;
       document.getElementById('radioSim').classList.toggle('active', val);
@@ -871,17 +853,14 @@
       document.getElementById('btnDoDownload').disabled = !ready;
       const hint = document.getElementById('dlHint');
       if (!allChecked) hint.textContent = 'Marque todos os itens acima para liberar o download.';
-      else if (wasReferred === null) hint.textContent = 'Responda a pergunta de indicação.';
+      else if (wasReferred === null) hint.textContent = 'Responda a pergunta de indicacao.';
       else if (wasReferred && !referralDone) hint.textContent = 'Digite o nome de quem te indicou.';
       else hint.textContent = '';
     }
 
-    /* ── Download + save ── */
     async function doDownload() {
       const name = wasReferred ? document.getElementById('referralName').value.trim() : null;
-      // Dispara o download imediatamente
       const a = document.createElement('a');
-      // On mobile, open the game (PWA). On desktop, download ZIP.
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
       if (isMobile) {
@@ -901,7 +880,6 @@
       a.click();
       document.body.removeChild(a);
       closeModal('modalDownload');
-      // Salva no Supabase em background (não bloqueia)
       fetch(`${SUPABASE_URL}/rest/v1/brasilfut_downloads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
@@ -909,7 +887,6 @@
       }).catch(() => {});
     }
 
-    /* ── Feedback ── */
     function updateFeedbackBtn() {
       const msg = document.getElementById('feedbackMsg').value.trim();
       document.getElementById('btnSendFeedback').disabled = msg.length < 3;
@@ -930,7 +907,7 @@
       } catch(_) {}
       if (!ok) {
         document.getElementById('btnSendFeedback').disabled = false;
-        alert('Erro ao enviar feedback. Verifique sua conexão e tente novamente.');
+        alert('Erro ao enviar feedback. Verifique sua conexao e tente novamente.');
         return;
       }
       document.getElementById('feedbackBody').querySelector('textarea').style.display = 'none';
@@ -940,7 +917,6 @@
       setTimeout(() => closeModal('modalFeedback'), 2800);
     }
 
-    /* ── Mobile: adapt download modal label ── */
     (function() {
       const isMob = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMob) {

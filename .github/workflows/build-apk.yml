@@ -1,0 +1,60 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Gradle 8.4
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.4'
+
+      - name: Generate Gradle Wrapper
+        working-directory: android
+        run: gradle wrapper --gradle-version 8.4
+
+      - name: Copy game files to Android assets
+        run: |
+          mkdir -p android/app/src/main/assets
+          cp brasil-fut.html android/app/src/main/assets/
+          cp -r escudos  android/app/src/main/assets/
+          cp -r camisas  android/app/src/main/assets/
+          cp -r assets   android/app/src/main/assets/web-assets
+
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/release/app-release-unsigned.apk BrasilFut-Android.apk || cp android/app/build/outputs/apk/release/app-release.apk BrasilFut-Android.apk
+
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BrasilFut-Android
+          path: BrasilFut-Android.apk
+          retention-days: 90
+
+      - name: Upload APK to GitHub Release
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "latest")
+          gh release upload "$TAG" BrasilFut-Android.apk --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
